@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See Relax specification: Ghidra/Framework/SoftwareModeling/data/languages/language_definitions.rxg -->
+<language_definitions>
+   <language processor="Webassembly"
+            endian="little"
+            size="16"
+            variant="default"
+            version="1.0"
+            slafile="Webassembly.sla"
+            processorspec="Webassembly.pspec"
+            id="wasm:LE:16:default">
+    <description>Webassembly Language Module</description>
+    <compiler name="default" spec="Webassembly.cspec" id="default"/>
+  </language> 
+</language_definitions>
