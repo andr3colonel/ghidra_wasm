@@ -4,12 +4,12 @@
 <language_definitions>
    <language processor="Webassembly"
             endian="little"
-            size="16"
+            size="32"
             variant="default"
             version="1.0"
             slafile="Webassembly.sla"
             processorspec="Webassembly.pspec"
-            id="wasm:LE:16:default">
+            id="wasm:LE:32:default">
     <description>Webassembly Language Module</description>
     <compiler name="default" spec="Webassembly.cspec" id="default"/>
   </language> 
