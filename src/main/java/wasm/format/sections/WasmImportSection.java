@@ -25,4 +25,9 @@ public class WasmImportSection extends WasmPayload {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getName() {
+		return ".import";
+	}
 }

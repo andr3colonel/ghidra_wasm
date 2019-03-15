@@ -28,5 +28,10 @@ public class WasmElementSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".element";
+	}
+
 
 }

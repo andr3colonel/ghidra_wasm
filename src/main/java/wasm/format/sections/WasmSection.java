@@ -16,6 +16,8 @@ public class WasmSection implements StructConverter {
 	
 	private WasmSectionId id;
 	private int payload_len;
+	private long section_size;
+	private long section_offset;
 	private WasmPayload payload;
 	private long payload_offset;
 
@@ -66,20 +68,18 @@ public class WasmSection implements StructConverter {
 	}
 	
 	public WasmSection(BinaryReader reader) throws IOException {
-		this.id = WasmSectionId.values()[Leb128.readUnsignedLeb128( reader.readByteArray( reader.getPointerIndex( ), 5 ))];
-		int len = Leb128.unsignedLeb128Size(this.id.ordinal());// consume leb...
-		reader.readNextByteArray(len);// consume leb...
+		section_offset = reader.getPointerIndex();
+		this.id = WasmSectionId.values()[Leb128.read_int(reader)];
 
-		this.payload_len = Leb128.readUnsignedLeb128( reader.readByteArray( reader.getPointerIndex( ), 5 ) );
-		len = Leb128.unsignedLeb128Size(this.payload_len);
-		reader.readNextByteArray(len);// consume leb...
-		
+		this.payload_len = Leb128.read_int(reader);
+
 		payload_offset = reader.getPointerIndex();
 		
 		byte payload_buf[] = reader.readNextByteArray(this.payload_len);
 		
 		payload = WasmSection.sectionsFactory(new BinaryReader(new ByteArrayProvider(payload_buf), true), id);
 		payload.deserializePayload(payload_buf);
+		section_size = reader.getPointerIndex() - section_offset;
 	}
 	
 	@Override
@@ -101,5 +101,13 @@ public class WasmSection implements StructConverter {
 		
 	public long getPayloadOffset() {
 		return payload_offset;
+	}
+
+	public long getSectionSize() {
+		return section_size;
+	}
+
+	public long getSectionOffset() {
+		return section_offset;
 	}
 }

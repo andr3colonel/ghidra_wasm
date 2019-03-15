@@ -25,4 +25,9 @@ public class WasmTableSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".table";
+	}
+
 }

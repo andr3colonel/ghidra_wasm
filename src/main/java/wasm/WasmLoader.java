@@ -138,6 +138,19 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		}
 	}
 
+	private void markupSections(Program program, WasmModule module, TaskMonitor monitor, InputStream reader) throws DuplicateNameException, IOException, AddressOverflowException {
+		boolean r = true;
+		boolean w = true;
+		boolean x = true;
+		String BLOCK_SOURCE_NAME = "Wasm Header";
+		for (WasmSection section: module.getSections()) {
+			Address start = program.getAddressFactory().getDefaultAddressSpace().getAddress(section.getSectionOffset());
+			mbu.createInitializedBlock(section.getPayload().getName(), start, reader, section.getSectionSize(), "", BLOCK_SOURCE_NAME, r, w, x, monitor);
+			//createData(program, program.getListing(), start, header.toDataType());			
+		}
+	}
+
+	
 	@Override
 	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
 		Program program, MemoryConflictHandler handler, TaskMonitor monitor, MessageLog log)
@@ -160,6 +173,7 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 			createMethodLookupMemoryBlock( program, monitor );
 			createMethodByteCodeBlock( program, length, monitor);
 			markupHeader(program, module.getHeader(), monitor, inputStream);
+			markupSections(program, module, monitor, inputStream);
 			monitor.setMessage( "Wasm Loader: Create byte code" );
 			
 			for (WasmSection section: module.getSections()) {

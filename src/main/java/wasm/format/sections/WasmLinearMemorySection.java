@@ -26,4 +26,9 @@ public class WasmLinearMemorySection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".linearMemory";
+	}
+
 }

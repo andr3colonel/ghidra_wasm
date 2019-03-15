@@ -26,5 +26,10 @@ public class WasmGlobalSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".global";
+	}
+
 
 }

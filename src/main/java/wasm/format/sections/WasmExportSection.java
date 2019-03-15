@@ -27,4 +27,9 @@ public class WasmExportSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".export";
+	}
+
 }

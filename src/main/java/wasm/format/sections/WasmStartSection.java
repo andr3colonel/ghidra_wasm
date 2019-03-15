@@ -24,4 +24,9 @@ public class WasmStartSection  extends WasmPayload {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getName() {
+		return ".start";
+	}
 }

@@ -41,5 +41,10 @@ public class WasmCodeSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".code";
+	}
+
 
 }

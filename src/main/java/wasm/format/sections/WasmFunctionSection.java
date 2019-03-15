@@ -26,4 +26,9 @@ public class WasmFunctionSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".function";
+	}
+
 }

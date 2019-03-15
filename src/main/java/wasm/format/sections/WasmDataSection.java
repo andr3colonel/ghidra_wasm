@@ -26,5 +26,10 @@ public class WasmDataSection extends WasmPayload {
 		
 	}
 
+	@Override
+	public String getName() {
+		return ".data";
+	}
+
 
 }
