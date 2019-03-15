@@ -1,21 +1,22 @@
-package wasm.file.formats.wasm.format.sections;
+package wasm.format.sections;
 
 import java.io.IOException;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteArrayProvider;
+import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
-import wasm.file.formats.wasm.format.Leb128;
+import wasm.format.Leb128;
 
 public class WasmSection implements StructConverter {
 	
 	private WasmSectionId id;
 	private int payload_len;
-	private StructConverter payload;
+	private WasmPayload payload;
 	private long payload_offset;
 
 	public enum WasmSectionId {
@@ -33,7 +34,7 @@ public class WasmSection implements StructConverter {
 		SEC_DATA
 	}
 	
-	private static StructConverter sectionsFactory(BinaryReader reader, WasmSectionId id) throws IOException {
+	private static WasmPayload sectionsFactory(BinaryReader reader, WasmSectionId id) throws IOException {
 		switch (id) {
 			case SEC_UNKNOWN:
 				return null;
@@ -76,24 +77,28 @@ public class WasmSection implements StructConverter {
 		payload_offset = reader.getPointerIndex();
 		
 		byte payload_buf[] = reader.readNextByteArray(this.payload_len);
-
-		this.payload = sectionsFactory(new BinaryReader(new ByteArrayProvider(payload_buf), true), id);
+		
+		payload = WasmSection.sectionsFactory(new BinaryReader(new ByteArrayProvider(payload_buf), true), id);
+		payload.deserializePayload(payload_buf);
 	}
-
 	
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-			return null;
+		Structure structure = new StructureDataType("header_item", 0);
+		structure.add(BYTE, 1, "id", null);
+		structure.add(DWORD, 4, "version", null);
+		payload.fillPayloadStruct(structure);
+		return structure;
 	}
 	
 	public WasmSectionId getId() {
 		return id;
 	}
 	
-	public StructConverter getPayload() {
+	public WasmPayload getPayload() {
 		return payload;
 	}
-	
+		
 	public long getPayloadOffset() {
 		return payload_offset;
 	}

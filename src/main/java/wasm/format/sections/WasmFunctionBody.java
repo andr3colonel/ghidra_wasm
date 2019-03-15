@@ -1,4 +1,4 @@
-package wasm.file.formats.wasm.format.sections;
+package wasm.format.sections;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,8 +7,9 @@ import java.util.List;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
+import ghidra.program.model.data.Structure;
 import ghidra.util.exception.DuplicateNameException;
-import wasm.file.formats.wasm.format.Leb128;
+import wasm.format.Leb128;
 
 public class WasmFunctionBody implements StructConverter {
 
@@ -29,18 +30,19 @@ public class WasmFunctionBody implements StructConverter {
 		instructions = reader.readNextByteArray((int) (body_start_offset + body_size - instructions_offset));
 	}
 
-	@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
 	public long getOffset() {
 		return instructions_offset;
 	}
 	
 	public byte[] getInstructions() {
 		return instructions;
+	}
+
+	@Override
+	public DataType toDataType() throws DuplicateNameException, IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

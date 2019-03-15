@@ -1,4 +1,4 @@
-package wasm.file.formats.wasm.format;
+package wasm.file;
 
 public class WasmConstants {
 	public final static String WASM_MAGIC_BASE = new String(new byte[] {0, 0x61, 0x73, 0x6D});

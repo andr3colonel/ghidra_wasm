@@ -15,14 +15,32 @@
  */
 package wasm;
 
+import java.io.IOException;
+
 import ghidra.app.services.AbstractAnalyzer;
 import ghidra.app.services.AnalyzerType;
+import ghidra.app.util.bin.BinaryReader;
+import ghidra.app.util.bin.ByteProvider;
+import ghidra.app.util.bin.MemoryByteProvider;
 import ghidra.app.util.importer.MessageLog;
+import ghidra.file.formats.android.dex.format.DexHeader;
 import ghidra.framework.options.Options;
+import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.listing.Program;
+import ghidra.program.model.symbol.Namespace;
+import ghidra.program.model.symbol.SourceType;
+import ghidra.program.model.symbol.Symbol;
 import ghidra.util.exception.CancelledException;
+import ghidra.util.exception.InvalidInputException;
 import ghidra.util.task.TaskMonitor;
+import wasm.file.WasmModule;
+import wasm.format.Utils;
+import wasm.format.WasmHeader;
+import wasm.format.sections.WasmCodeSection;
+import wasm.format.sections.WasmFunctionBody;
+import wasm.format.sections.WasmSection;
+import wasm.format.sections.WasmSection.WasmSectionId;
 
 /**
  * TODO: Provide class-level documentation that describes what this analyzer does.
@@ -33,7 +51,7 @@ public class WasmAnalyzer extends AbstractAnalyzer {
 
 		// TODO: Name the analyzer and give it a description.
 
-		super("My Analyzer", "Analyzer description goes here", AnalyzerType.BYTE_ANALYZER);
+		super("Wasm exports extractor", "Extracts exported methods from wasm file", AnalyzerType.BYTE_ANALYZER);
 	}
 
 	@Override
@@ -50,7 +68,7 @@ public class WasmAnalyzer extends AbstractAnalyzer {
 		// TODO: Examine 'program' to determine of this analyzer should analyze it.  Return true
 		// if it can.
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -61,13 +79,43 @@ public class WasmAnalyzer extends AbstractAnalyzer {
 		options.registerOption("Option name goes here", false, null,
 			"Option description goes here");
 	}
+	
+	private Symbol createMethodSymbol(Program program, Address methodAddress, String methodName,
+			Namespace classNameSpace, MessageLog log) {
+		program.getSymbolTable().addExternalEntryPoint(methodAddress);
+		try {
+			return program.getSymbolTable().createLabel(methodAddress, methodName, classNameSpace,
+				SourceType.ANALYSIS);
+		}
+		catch (InvalidInputException e) {
+			log.appendException(e);
+			return null;
+		}
+	}
 
 	@Override
 	public boolean added(Program program, AddressSetView set, TaskMonitor monitor, MessageLog log)
 			throws CancelledException {
+		ByteProvider provider = new MemoryByteProvider(program.getMemory(), program.getMinAddress());
+		BinaryReader reader = new BinaryReader(provider, true);
+		try {
+			WasmModule header = new WasmModule(reader);
+			for (WasmSection section: header.getSections()) {
+				if (section.getId() == WasmSectionId.SEC_CODE) {
+					WasmCodeSection codeSection = (WasmCodeSection)section.getPayload();
+					long code_offset = section.getPayloadOffset();
+					for (WasmFunctionBody method: codeSection.getFunctions()) {
+						long method_offset = code_offset + method.getOffset();
+						Address methodAddress = Utils.toAddr( program, Utils.METHOD_ADDRESS + method_offset );
+						createMethodSymbol(program, methodAddress, "R", null, log);
+					}
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		// TODO: Perform analysis when things get added to the 'program'.  Return true if the
-		// analysis succeeded.
 
 		return false;
 	}

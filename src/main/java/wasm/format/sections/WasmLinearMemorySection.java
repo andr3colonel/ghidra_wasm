@@ -1,23 +1,29 @@
-package wasm.file.formats.wasm.format.sections;
+package wasm.format.sections;
 
 import java.io.IOException;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
+import ghidra.program.model.data.Structure;
 import ghidra.util.exception.DuplicateNameException;
 
-public class WasmLinearMemorySection implements StructConverter {
+public class WasmLinearMemorySection extends WasmPayload {
 
 	
 	public WasmLinearMemorySection (BinaryReader reader) throws IOException {
 	}
 
-	
 	@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
+	public void deserializePayload(byte[] payload) {
 		// TODO Auto-generated method stub
-		return null;
+		
+	}
+
+	@Override
+	public void fillPayloadStruct(Structure structure) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

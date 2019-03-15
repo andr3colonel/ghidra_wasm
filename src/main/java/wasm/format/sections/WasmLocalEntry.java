@@ -1,4 +1,4 @@
-package wasm.file.formats.wasm.format.sections;
+package wasm.format.sections;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.util.exception.DuplicateNameException;
-import wasm.file.formats.wasm.format.Leb128;
+import wasm.format.Leb128;
 
 public class WasmLocalEntry implements StructConverter {
 
