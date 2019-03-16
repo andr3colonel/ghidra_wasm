@@ -14,11 +14,6 @@ public class WasmFunctionSection extends WasmPayload {
 	public WasmFunctionSection (BinaryReader reader) throws IOException {
 	}
 
-	@Override
-	public void deserializePayload(byte[] payload) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void fillPayloadStruct(Structure structure) {

@@ -78,7 +78,6 @@ public class WasmSection implements StructConverter {
 		byte payload_buf[] = reader.readNextByteArray(this.payload_len.getValue());
 		
 		payload = WasmSection.sectionsFactory(new BinaryReader(new ByteArrayProvider(payload_buf), true), id);
-		payload.deserializePayload(payload_buf);
 		section_size = reader.getPointerIndex() - section_offset;
 	}
 	

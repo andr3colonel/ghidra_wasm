@@ -25,11 +25,6 @@ public class WasmExportSection extends WasmPayload {
 		
 	}
 
-	@Override
-	public void deserializePayload(byte[] payload) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void fillPayloadStruct(Structure structure) throws DuplicateNameException, IOException {

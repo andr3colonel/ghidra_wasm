@@ -26,12 +26,6 @@ public class WasmDataSection extends WasmPayload {
 	}
 
 	@Override
-	public void deserializePayload(byte[] payload) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void fillPayloadStruct(Structure structure) throws DuplicateNameException, IOException {
 		structure.add(count.getType(), count.getSize(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {

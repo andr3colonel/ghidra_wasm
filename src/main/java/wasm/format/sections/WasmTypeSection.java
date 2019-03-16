@@ -14,12 +14,6 @@ public class WasmTypeSection extends WasmPayload {
 	}
 
 	@Override
-	public void deserializePayload(byte[] payload) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void fillPayloadStruct(Structure structure) {
 		// TODO Auto-generated method stub
 		
