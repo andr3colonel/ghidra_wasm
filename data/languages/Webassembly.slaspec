@@ -3,7 +3,7 @@
 define endian=little;
 define alignment=1;
 
-define space RAM     type=ram_space      size=3  default;
+define space RAM     type=ram_space      size=4  default;
 define space register type=register_space size=1;
 
 define register offset=0x00  size=1 [ A X Y P ];

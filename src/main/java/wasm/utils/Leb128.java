@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package wasm.file.formats.wasm.format;
+package wasm.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
