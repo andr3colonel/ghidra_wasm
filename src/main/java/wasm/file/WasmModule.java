@@ -12,7 +12,7 @@ import wasm.format.WasmConstants;
 import wasm.format.WasmHeader;
 import wasm.format.sections.WasmSection;
 
-public class WasmModule implements StructConverter {
+public class WasmModule  {
 	
 	private WasmHeader header;
 	private List<WasmSection> sections = new ArrayList<WasmSection>();
@@ -24,12 +24,6 @@ public class WasmModule implements StructConverter {
 		}
 	}
 
-	
-	@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	public WasmHeader getHeader() {
 		return header;
