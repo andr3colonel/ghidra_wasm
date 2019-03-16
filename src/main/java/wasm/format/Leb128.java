@@ -25,7 +25,10 @@ import java.io.IOException;
 import com.googlecode.d2j.DexException;
 
 import ghidra.app.util.bin.BinaryReader;
+import ghidra.app.util.bin.StructConverter;
+import ghidra.program.model.data.DataType;
 import ghidra.util.NumericUtilities;
+import ghidra.util.exception.DuplicateNameException;
 
 /**
  * Reads and writes DWARFv3 LEB 128 signed and unsigned integers. See DWARF v3 section 7.6.
@@ -209,4 +212,40 @@ public final class Leb128 {
 
 		
 	}
+	
+	private int value;
+	private int length;
+	
+	
+	public Leb128(BinaryReader reader) throws IOException {
+		value = Leb128.readUnsignedLeb128( reader.readByteArray( reader.getPointerIndex( ), 5 ) );
+		length = Leb128.unsignedLeb128Size(value);
+		reader.readNextByteArray(length);// consume leb...
+	}
+	
+	public int getValue() {
+		return value;
+	} 
+	
+	public int getSize() {
+		return length;
+	}
+	
+	public DataType getType() {
+		switch (length) {
+			case 1:
+				return ghidra.app.util.bin.StructConverter.BYTE; 
+			case 2:
+				return ghidra.app.util.bin.StructConverter.WORD; 	
+			case 4:
+				return ghidra.app.util.bin.StructConverter.DWORD; 
+		}
+		return null;
+		
+	}
+	
+	/*@Override
+	public DataType toDataType() throws DuplicateNameException, IOException {
+		return null;
+	}*/
 }

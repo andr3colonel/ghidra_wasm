@@ -7,13 +7,13 @@ import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.util.exception.DuplicateNameException;
+import wasm.format.Leb128;
 
 public class WasmElementSection extends WasmPayload {
 
-	
+
 	
 	public WasmElementSection (BinaryReader reader) throws IOException {
-
 	}
 
 	@Override

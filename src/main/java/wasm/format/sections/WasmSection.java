@@ -15,7 +15,7 @@ import wasm.format.Leb128;
 public class WasmSection implements StructConverter {
 	
 	private WasmSectionId id;
-	private int payload_len;
+	private Leb128 payload_len;
 	private long section_size;
 	private long section_offset;
 	private WasmPayload payload;
@@ -71,11 +71,11 @@ public class WasmSection implements StructConverter {
 		section_offset = reader.getPointerIndex();
 		this.id = WasmSectionId.values()[Leb128.read_int(reader)];
 
-		this.payload_len = Leb128.read_int(reader);
+		this.payload_len = new Leb128(reader);
 
 		payload_offset = reader.getPointerIndex();
 		
-		byte payload_buf[] = reader.readNextByteArray(this.payload_len);
+		byte payload_buf[] = reader.readNextByteArray(this.payload_len.getValue());
 		
 		payload = WasmSection.sectionsFactory(new BinaryReader(new ByteArrayProvider(payload_buf), true), id);
 		payload.deserializePayload(payload_buf);
@@ -84,9 +84,9 @@ public class WasmSection implements StructConverter {
 	
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-		Structure structure = new StructureDataType("header_item", 0);
+		Structure structure = new StructureDataType(payload.getName(), 0);
 		structure.add(BYTE, 1, "id", null);
-		structure.add(DWORD, 4, "version", null);
+		structure.add(payload_len.getType(), payload_len.getSize(), "size", null);
 		payload.fillPayloadStruct(structure);
 		return structure;
 	}

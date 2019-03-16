@@ -10,17 +10,16 @@ import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
+import wasm.format.sections.structures.WasmFunctionBody;
 
 public class WasmCodeSection extends WasmPayload {
 
-	private int count;
+	private Leb128 count;
 	List<WasmFunctionBody> functions = new ArrayList <WasmFunctionBody>();
-
-	private List<WasmSection> sections = new ArrayList<WasmSection>();
 	
 	public WasmCodeSection (BinaryReader reader) throws IOException {
-		count = Leb128.read_int(reader);
-		for (int i =0; i < count; ++i) {
+		count = new Leb128(reader);
+		for (int i =0; i < count.getValue(); ++i) {
 			functions.add(new WasmFunctionBody(reader));
 		}
 	}
@@ -36,9 +35,13 @@ public class WasmCodeSection extends WasmPayload {
 	}
 
 	@Override
-	public void fillPayloadStruct(Structure structure) {
-		// TODO Auto-generated method stub
-		
+	public void fillPayloadStruct(Structure structure) throws DuplicateNameException, IOException {
+		structure.add(count.getType(), count.getSize(), "count", null);
+		int function_id = 0;
+		for (WasmFunctionBody function: functions) {
+			structure.add(function.toDataType(), function.toDataType().getLength(), "function_" + function_id, null);
+			function_id ++;
+		}
 	}
 
 	@Override

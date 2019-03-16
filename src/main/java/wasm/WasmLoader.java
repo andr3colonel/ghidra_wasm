@@ -32,6 +32,7 @@ import ghidra.app.util.opinion.QueryResult;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressOverflowException;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.DataTypeConflictException;
 import ghidra.program.model.data.DataUtilities;
@@ -40,6 +41,7 @@ import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.model.symbol.SourceType;
 import ghidra.program.model.util.CodeUnitInsertionException;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
@@ -50,10 +52,10 @@ import wasm.format.Utils;
 import wasm.format.WasmConstants;
 import wasm.format.WasmHeader;
 import wasm.format.sections.WasmCodeSection;
-import wasm.format.sections.WasmFunctionBody;
 import wasm.format.sections.WasmSection;
-import wasm.format.sections.WasmLocalEntry.WasmLocalType;
 import wasm.format.sections.WasmSection.WasmSectionId;
+import wasm.format.sections.structures.WasmFunctionBody;
+import wasm.format.sections.structures.WasmLocalEntry.WasmLocalType;
 
 /**
  * TODO: Provide class-level documentation that describes what this loader does.
@@ -101,7 +103,6 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		block.setExecute( false );
 	}
 
-	private static final String WASM_HEADER_BLOCK_NAME = "_wasmHeader";
 	private MemoryBlockUtil mbu; 
 	
 	
@@ -142,11 +143,11 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		boolean r = true;
 		boolean w = true;
 		boolean x = true;
-		String BLOCK_SOURCE_NAME = "Wasm Header";
+		String BLOCK_SOURCE_NAME = "Wasm Section";
 		for (WasmSection section: module.getSections()) {
 			Address start = program.getAddressFactory().getDefaultAddressSpace().getAddress(section.getSectionOffset());
 			mbu.createInitializedBlock(section.getPayload().getName(), start, reader, section.getSectionSize(), "", BLOCK_SOURCE_NAME, r, w, x, monitor);
-			//createData(program, program.getListing(), start, header.toDataType());			
+			createData(program, program.getListing(), start, section.toDataType());			
 		}
 	}
 
@@ -185,10 +186,12 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 					for (WasmFunctionBody method: codeSection.getFunctions()) {
 						long method_offset = code_offset + method.getOffset();
 						Address methodAddress = Utils.toAddr( program, Utils.METHOD_ADDRESS + method_offset );
+						Address methodend = Utils.toAddr( program, Utils.METHOD_ADDRESS + method_offset + method.getInstructions().length);
 						Address methodIndexAddress = Utils.toAddr( program, Utils.LOOKUP_ADDRESS + lookupOffset );
 						byte [] instructionBytes = method.getInstructions();
 						program.getMemory( ).setBytes( methodAddress, instructionBytes );
 						program.getMemory( ).setInt( methodIndexAddress, (int) methodAddress.getOffset( ) );
+						program.getFunctionManager().createFunction("Method_" + lookupOffset, methodAddress, new AddressSet(methodAddress, methodend), SourceType.ANALYSIS);
 						lookupOffset += 4;
 					}
 				}

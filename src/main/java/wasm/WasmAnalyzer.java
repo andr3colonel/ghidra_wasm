@@ -38,9 +38,9 @@ import wasm.file.WasmModule;
 import wasm.format.Utils;
 import wasm.format.WasmHeader;
 import wasm.format.sections.WasmCodeSection;
-import wasm.format.sections.WasmFunctionBody;
 import wasm.format.sections.WasmSection;
 import wasm.format.sections.WasmSection.WasmSectionId;
+import wasm.format.sections.structures.WasmFunctionBody;
 
 /**
  * TODO: Provide class-level documentation that describes what this analyzer does.
