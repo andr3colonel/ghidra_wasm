@@ -218,7 +218,7 @@ public final class Leb128 {
 	
 	
 	public Leb128(BinaryReader reader) throws IOException {
-		value = Leb128.readUnsignedLeb128( reader.readByteArray( reader.getPointerIndex( ), 5 ) );
+		value = Leb128.readUnsignedLeb128( reader.readByteArray( reader.getPointerIndex( ), (int) Math.min(5, reader.length() - reader.getPointerIndex())));
 		length = Leb128.unsignedLeb128Size(value);
 		reader.readNextByteArray(length);// consume leb...
 	}
@@ -243,9 +243,4 @@ public final class Leb128 {
 		return null;
 		
 	}
-	
-	/*@Override
-	public DataType toDataType() throws DuplicateNameException, IOException {
-		return null;
-	}*/
 }
