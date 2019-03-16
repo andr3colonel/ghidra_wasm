@@ -1,6 +1,8 @@
-package wasm.format.sections;
+package wasm.format.sections.structures;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
@@ -11,28 +13,34 @@ import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
 
-public class WasmDataSegment implements StructConverter {
+public class WasmElementSegment implements StructConverter {
 
 	private Leb128 index;
-	private int offset;
+	private byte init_opcode;
+	private short offset;
 	private Leb128 size;
-	private byte[] data;
+	private List<Leb128> data = new ArrayList<Leb128>();
 
-	public WasmDataSegment(BinaryReader reader) throws IOException {
+	public WasmElementSegment(BinaryReader reader) throws IOException {
 		index = new Leb128(reader);
-		offset = reader.readNextInt();
+		init_opcode = reader.readNextByte();
+		offset = reader.readNextShort();
 		size = new Leb128(reader);
-		data = reader.readNextByteArray(size.getValue());
+		for (int i = 0; i < size.getValue(); i++) {
+			data.add(new Leb128(reader));			
+		}
 	}
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("data_segment_" + index.getValue(), 0);
 		structure.add(index.getType(), index.getSize(), "index", null);
-		structure.add(DWORD, 4, "offset", null);
+		structure.add(BYTE, 1, "init_opcode", null);
+		structure.add(WORD, 2, "offset", null);
 		structure.add(size.getType(), size.getSize(), "size", null);
-		structure.add(new ArrayDataType(BYTE, data.length, BYTE.getLength()), "data", null);
+		for (int i = 0; i < size.getValue(); i++) {
+			structure.add(data.get(i).getType(), data.get(i).getSize(), "element_" + i, null);			
+		}
 		return structure;
 	}
-
 }

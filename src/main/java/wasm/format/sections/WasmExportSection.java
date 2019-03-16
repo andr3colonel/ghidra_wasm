@@ -21,8 +21,7 @@ public class WasmExportSection extends WasmPayload {
 		count = new Leb128(reader);
 		for (int i =0; i < count.getValue(); ++i) {
 			exports.add(new WasmExportEntry(reader));
-		}
-		
+		}		
 	}
 
 

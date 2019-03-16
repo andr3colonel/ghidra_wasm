@@ -10,6 +10,7 @@ import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
+import wasm.format.sections.structures.WasmDataSegment;
 
 public class WasmDataSection extends WasmPayload {
 
