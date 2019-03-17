@@ -8,13 +8,14 @@ import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
+import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
 import wasm.format.sections.structures.WasmImportEntry;
 import wasm.format.sections.structures.WasmResizableLimits;
 import wasm.format.sections.structures.WasmTableType;
 
-public class WasmLinearMemorySection extends WasmPayload {
+public class WasmLinearMemorySection implements WasmPayload {
 
 	private Leb128 count;
 	private List<WasmResizableLimits> limits = new ArrayList<WasmResizableLimits>();
@@ -28,11 +29,13 @@ public class WasmLinearMemorySection extends WasmPayload {
 
 
 	@Override
-	public void fillPayloadStruct(Structure structure) throws DuplicateNameException, IOException {
+	public DataType toDataType() throws DuplicateNameException, IOException {
+		Structure structure = new StructureDataType("MemorySection", 0);
 		structure.add(count.getType(), count.getSize(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {
 			structure.add(limits.get(i).toDataType(), limits.get(i).toDataType().getLength(), "memory_type_"+i, null);
-		}		
+		}
+		return structure;
 	}
 
 	@Override

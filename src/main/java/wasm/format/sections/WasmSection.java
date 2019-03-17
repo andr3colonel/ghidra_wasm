@@ -86,7 +86,7 @@ public class WasmSection implements StructConverter {
 		Structure structure = new StructureDataType(payload.getName(), 0);
 		structure.add(BYTE, 1, "id", null);
 		structure.add(payload_len.getType(), payload_len.getSize(), "size", null);
-		payload.fillPayloadStruct(structure);
+		structure.add(payload.toDataType(), payload.toDataType().getLength(), "payload", null);
 		return structure;
 	}
 	

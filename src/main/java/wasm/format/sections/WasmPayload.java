@@ -2,10 +2,10 @@ package wasm.format.sections;
 
 import java.io.IOException;
 
-import ghidra.program.model.data.Structure;
+import ghidra.app.util.bin.StructConverter;
+import ghidra.program.model.data.DataType;
 import ghidra.util.exception.DuplicateNameException;
 
-abstract public class WasmPayload {
-	abstract public void fillPayloadStruct(Structure structure) throws DuplicateNameException, IOException;
+abstract public interface WasmPayload extends StructConverter {
 	abstract public String getName();	
 }

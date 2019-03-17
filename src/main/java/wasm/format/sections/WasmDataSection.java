@@ -8,11 +8,12 @@ import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.StructConverter;
 import ghidra.program.model.data.DataType;
 import ghidra.program.model.data.Structure;
+import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
 import wasm.format.sections.structures.WasmDataSegment;
 
-public class WasmDataSection extends WasmPayload {
+public class WasmDataSection implements WasmPayload {
 
 	
 	private Leb128 count;
@@ -27,11 +28,13 @@ public class WasmDataSection extends WasmPayload {
 	}
 
 	@Override
-	public void fillPayloadStruct(Structure structure) throws DuplicateNameException, IOException {
+	public DataType toDataType() throws DuplicateNameException, IOException {
+		Structure structure = new StructureDataType("DataSection", 0);
 		structure.add(count.getType(), count.getSize(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {
 			structure.add(dataSegments.get(i).toDataType(), dataSegments.get(i).toDataType().getLength(), "segment_"+i, null);
 		}
+		return structure;
 	}
 
 	@Override
