@@ -6,12 +6,14 @@ define alignment=1;
 @define DWORD "4"		# Number of bytes in the Java Word
 @define QWORD "8"
 
+
 define space ram                 type=ram_space      size=$(DWORD) default;
 define space register            type=register_space size=$(DWORD);
 define space constantPool		 type=ram_space      size=$(DWORD);
 define space localVariableArray  type=ram_space      size=$(DWORD);
 define space parameterSpace      type=ram_space      size=$(DWORD);
 
+define register offset = 0x0 size=$(QWORD) [return_value];
 define register offset = 0x0 size=$(DWORD) [SP PC];
 
 ###############################################################################

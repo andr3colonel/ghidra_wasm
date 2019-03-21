@@ -7,16 +7,17 @@
 <space name="localVariableArray" index="5" bigendian="false" delay="1" size="4" physical="true"/>
 <space name="parameterSpace" index="6" bigendian="false" delay="1" size="4" physical="true"/>
 </spaces>
-<symbol_table scopesize="1" symbolsize="6">
+<symbol_table scopesize="1" symbolsize="7">
 <scope id="0x0" parent="0x0"/>
 <subtable_sym_head name="instruction" id="0x0" scope="0x0"/>
 <start_sym_head name="inst_start" id="0x1" scope="0x0"/>
 <end_sym_head name="inst_next" id="0x2" scope="0x0"/>
-<varnode_sym_head name="SP" id="0x3" scope="0x0"/>
-<varnode_sym_head name="PC" id="0x4" scope="0x0"/>
-<value_sym_head name="op" id="0x5" scope="0x0"/>
+<varnode_sym_head name="return_value" id="0x3" scope="0x0"/>
+<varnode_sym_head name="SP" id="0x4" scope="0x0"/>
+<varnode_sym_head name="PC" id="0x5" scope="0x0"/>
+<value_sym_head name="op" id="0x6" scope="0x0"/>
 <subtable_sym name="instruction" id="0x0" scope="0x0" numct="1">
-<constructor parent="0x0" first="1" length="1" line="55">
+<constructor parent="0x0" first="1" length="1" line="57">
 <print piece="nop"/>
 <construct_tpl>
 <null/></construct_tpl>
@@ -33,11 +34,13 @@
 </subtable_sym>
 <start_sym name="inst_start" id="0x1" scope="0x0"/>
 <end_sym name="inst_next" id="0x2" scope="0x0"/>
-<varnode_sym name="SP" id="0x3" scope="0x0" space="register" offset="0x0" size="4">
+<varnode_sym name="return_value" id="0x3" scope="0x0" space="register" offset="0x0" size="8">
 </varnode_sym>
-<varnode_sym name="PC" id="0x4" scope="0x0" space="register" offset="0x4" size="4">
+<varnode_sym name="SP" id="0x4" scope="0x0" space="register" offset="0x0" size="4">
 </varnode_sym>
-<value_sym name="op" id="0x5" scope="0x0">
+<varnode_sym name="PC" id="0x5" scope="0x0" space="register" offset="0x4" size="4">
+</varnode_sym>
+<value_sym name="op" id="0x6" scope="0x0">
 <tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
 </value_sym>
 </symbol_table>

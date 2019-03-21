@@ -1,13 +1,28 @@
+<?xml version="1.1" encoding="UTF-8"?>
+
 <compiler_spec>
 	<global>
-		<range space="RAM"/>
+		<range space="ram"/>
 	</global>
-	<stackpointer register="SP" space="RAM" growth="negative"/>
+	<stackpointer register="SP" space="ram" growth="negative"/>
 	<default_proto>
-		<prototype name="__stdcall" extrapop="4" stackshift="4" strategy="register">
-			<unaffected>
-				<register name="SP"/>
-			</unaffected>
-		</prototype>
+	    <prototype name="__stdcall" extrapop="-2" stackshift="-2">
+	        <input>
+	          <pentry minsize="1" maxsize="500" align="4" extension="inttype">
+	            <addr offset="0" space="parameterSpace"/>
+	          </pentry>
+	        </input>
+	        <output>        
+	          <pentry minsize="1" maxsize="8" extension="inttype">
+	            <register name= "return_value"/>
+	          </pentry>
+	        </output>
+	        <localrange>
+	          <range space="parameterSpace" first="0x00010000" last="0x00010010"/>
+	        </localrange>
+			  <unaffected>
+			    <register name="SP"/>
+			  </unaffected>
+	    </prototype>
 	</default_proto>
 </compiler_spec>
