@@ -30,7 +30,7 @@ public class WasmImportSection implements WasmPayload {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("ImportsSection", 0);
-		structure.add(count.getType(), count.getSize(), "count", null);
+		structure.add(count.toDataType(), count.toDataType().getLength(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {
 			structure.add(imports.get(i).toDataType(), imports.get(i).toDataType().getLength(), "import_"+i, null);
 		}

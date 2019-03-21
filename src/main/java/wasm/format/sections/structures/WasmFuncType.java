@@ -35,11 +35,11 @@ public class WasmFuncType implements StructConverter {
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("funct_type", 0);
 		structure.add(BYTE, 1, "form", null);
-		structure.add(param_count.getType(), param_count.getSize(), "param_count", null);
+		structure.add(param_count.toDataType(), param_count.toDataType().getLength(), "param_count", null);
 		if (param_count.getValue() > 0) {
 			structure.add(new ArrayDataType(BYTE, param_count.getValue(), 1), "param_types", null);
 		}
-		structure.add(return_count.getType(), return_count.getSize(), "return_count", null);
+		structure.add(return_count.toDataType(), return_count.toDataType().getLength(), "return_count", null);
 		if (return_count.getValue() > 0) {
 			structure.add(new ArrayDataType(BYTE, return_count.getValue(), 1), "return_types", null);
 		}

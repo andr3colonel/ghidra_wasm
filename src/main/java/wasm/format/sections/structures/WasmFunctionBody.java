@@ -44,8 +44,8 @@ public class WasmFunctionBody implements StructConverter {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("function_body_" + instructions_offset, 0);
-		structure.add(body_size.getType(), body_size.getSize(), "body_size", null);
-		structure.add(local_count.getType(), local_count.getSize(), "local_count", null);
+		structure.add(body_size.toDataType(), body_size.toDataType().getLength(), "body_size", null);
+		structure.add(local_count.toDataType(), local_count.toDataType().getLength(), "local_count", null);
 		if (local_count.getValue() > 0) {
 			//kind of hack, but I don't know how does it work for arrays of structures
 			structure.add(new ArrayDataType(locals.get(0).toDataType(), locals.size(), 2), "locals", null);			

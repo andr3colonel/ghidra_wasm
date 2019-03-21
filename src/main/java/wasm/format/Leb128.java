@@ -33,7 +33,7 @@ import ghidra.util.exception.DuplicateNameException;
 /**
  * Reads and writes DWARFv3 LEB 128 signed and unsigned integers. See DWARF v3 section 7.6.
  */
-public final class Leb128 {
+public final class Leb128 implements StructConverter {
 	private Leb128() {
 	}
 
@@ -231,7 +231,8 @@ public final class Leb128 {
 		return length;
 	}
 	
-	public DataType getType() {
+	@Override
+	public DataType toDataType() throws DuplicateNameException, IOException {
 		switch (length) {
 			case 1:
 				return ghidra.app.util.bin.StructConverter.BYTE; 
@@ -240,7 +241,6 @@ public final class Leb128 {
 			case 4:
 				return ghidra.app.util.bin.StructConverter.DWORD; 
 		}
-		return null;
-		
+		return null;		
 	}
 }

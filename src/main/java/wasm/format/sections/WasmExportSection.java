@@ -29,7 +29,7 @@ public class WasmExportSection implements WasmPayload {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("ExportSection", 0);
-		structure.add(count.getType(), count.getSize(), "count", null);
+		structure.add(count.toDataType(), count.toDataType().getLength(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {
 			structure.add(exports.get(i).toDataType(), exports.get(i).toDataType().getLength(), "export_"+i, null);
 		}		

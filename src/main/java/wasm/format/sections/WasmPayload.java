@@ -8,4 +8,6 @@ import ghidra.util.exception.DuplicateNameException;
 
 abstract public interface WasmPayload extends StructConverter {
 	abstract public String getName();	
+
+
 }

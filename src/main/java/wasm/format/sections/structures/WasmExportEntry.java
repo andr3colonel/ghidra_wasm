@@ -28,10 +28,10 @@ public class WasmExportEntry implements StructConverter {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("export_" + index, 0);
-		structure.add(field_len.getType(), field_len.getSize(), "field_len", null);
+		structure.add(field_len.toDataType(), field_len.toDataType().getLength(), "field_len", null);
 		structure.add(STRING, name.length(), "name", null);
 		structure.add(BYTE, 1, "kind", null);
-		structure.add(index.getType(), index.getSize(), "index", null);
+		structure.add(index.toDataType(), index.toDataType().getLength(), "index", null);
 		return structure;
 	}
 
