@@ -85,7 +85,7 @@ public class WasmSection implements StructConverter {
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType(payload.getName(), 0);
 		structure.add(BYTE, 1, "id", null);
-		structure.add(payload_len.getType(), payload_len.getSize(), "size", null);
+		structure.add(payload_len.toDataType(), payload_len.toDataType().getLength(), "size", null);
 		structure.add(payload.toDataType(), payload.toDataType().getLength(), "payload", null);
 		return structure;
 	}

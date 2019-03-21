@@ -28,9 +28,9 @@ public class WasmDataSegment implements StructConverter {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("data_segment_" + index.getValue(), 0);
-		structure.add(index.getType(), index.getSize(), "index", null);
+		structure.add(index.toDataType(), index.toDataType().getLength(), "index", null);
 		structure.add(DWORD, 4, "offset", null);
-		structure.add(size.getType(), size.getSize(), "size", null);
+		structure.add(size.toDataType(), size.toDataType().getLength(), "size", null);
 		structure.add(new ArrayDataType(BYTE, data.length, BYTE.getLength()), "data", null);
 		return structure;
 	}

@@ -29,7 +29,7 @@ public class WasmTableSection implements WasmPayload {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("TableSection", 0);
-		structure.add(count.getType(), count.getSize(), "count", null);
+		structure.add(count.toDataType(), count.toDataType().getLength(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {
 			structure.add(types.get(i).toDataType(), types.get(i).toDataType().getLength(), "table_type_"+i, null);
 		}

@@ -34,12 +34,12 @@ public class WasmElementSegment implements StructConverter {
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("data_segment_" + index.getValue(), 0);
-		structure.add(index.getType(), index.getSize(), "index", null);
+		structure.add(index.toDataType(), index.toDataType().getLength(), "index", null);
 		structure.add(BYTE, 1, "init_opcode", null);
 		structure.add(WORD, 2, "offset", null);
-		structure.add(size.getType(), size.getSize(), "size", null);
+		structure.add(size.toDataType(), size.toDataType().getLength(), "size", null);
 		for (int i = 0; i < size.getValue(); i++) {
-			structure.add(data.get(i).getType(), data.get(i).getSize(), "element_" + i, null);			
+			structure.add(data.get(i).toDataType(), data.get(i).toDataType().getLength(), "element_" + i, null);			
 		}
 		return structure;
 	}

@@ -27,11 +27,11 @@ public class WasmFunctionSection implements WasmPayload {
 
 
 	@Override
-	public DataType toDataType() {
+	public DataType toDataType() throws DuplicateNameException, IOException {
 		Structure structure = new StructureDataType("FunctionsSection", 0);
-		structure.add(count.getType(), count.getSize(), "count", null);
+		structure.add(count.toDataType(), count.toDataType().getLength(), "count", null);
 		for (int i = 0; i < count.getValue(); ++i) {
-			structure.add(types.get(i).getType(), types.get(i).getSize(), "function_"+i, null);
+			structure.add(types.get(i).toDataType(), types.get(i).toDataType().getLength(), "function_"+i, null);
 		}
 		return structure;
 	}
