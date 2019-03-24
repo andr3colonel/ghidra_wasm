@@ -95,6 +95,12 @@ macro pop2(x)
 # LEB128
 ###############################################################################
 
+testrmode2: val is (flag40_0=1 & flag40_1=1 & flag40_2=1 & flag40_3=1 & flag40_4=0) & byte40_0 & byte40_1 & byte40_2 & byte40_3 & byte40_4 [ val = byte40_0 | byte40_1 << 7 | byte40_2 << 14| byte40_3 << 21| byte40_4 << 28; ] {tmp:4=0; export tmp;}
+testrmode2: val is (flag32_0=1 & flag32_1=1 & flag32_2=1 & flag32_3=0) & byte32_0 & byte32_1 & byte32_2 & byte32_3 [ val = byte32_0 | byte32_1 << 7 | byte32_2 << 14| byte32_3 << 21; ] {tmp:4=0; export tmp;}
+testrmode2: val is (flag24_0=1 & flag24_1=1 & flag24_2=0) & byte24_0 & byte24_1 & byte24_2 [ val = byte24_0 | byte24_1 << 7 | byte24_1 << 14; ] {tmp:4=0; export tmp;}
+testrmode2: val is (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = byte16_0 | byte16_1 <<7; ] {tmp:4=0; export tmp;}
+testrmode2: byte8_0 is flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
+
 
 testrmode: val is op; (flag40_0=1 & flag40_1=1 & flag40_2=1 & flag40_3=1 & flag40_4=0) & byte40_0 & byte40_1 & byte40_2 & byte40_3 & byte40_4 [ val = byte40_0 | byte40_1 << 7 | byte40_2 << 14| byte40_3 << 21| byte40_4 << 28; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag32_0=1 & flag32_1=1 & flag32_2=1 & flag32_3=0) & byte32_0 & byte32_1 & byte32_2 & byte32_3 [ val = byte32_0 | byte32_1 << 7 | byte32_2 << 14| byte32_3 << 21; ] {tmp:4=0; export tmp;}
@@ -106,12 +112,169 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
 # Constructors
 ###############################################################################
 :nop is op=0x00
-{
+{}
 
+:block testrmode is op=0x02 ... & testrmode {
 }
 
-:i32.const testrmode is op=0x41 ... & testrmode {
+:loop testrmode is op=0x03 ... & testrmode {
 }
+
+:br testrmode is op=0x0C ... & testrmode {
+}
+
+:end is op=0x0B {   
+}
+
+:return testrmode is op=0x0F ... & testrmode {   
+}
+
+:call testrmode is op=0x10 ... & testrmode {   
+}
+
+
+:call_indirect testrmode, testrmode2 is op=0x11 ... & testrmode; testrmode2 {
+}
+
+
+:i32.load8_u testrmode, testrmode2 is op=0x2d  ... & testrmode; testrmode2 {
+}
+
+:i32.load16_u testrmode, testrmode2 is op=0x2f  ... & testrmode; testrmode2 {
+}
+
+:i32.store8 testrmode, testrmode2 is op=0x3A  ... & testrmode; testrmode2 {
+}
+
+:i32.store16 testrmode, testrmode2 is op=0x3B  ... & testrmode; testrmode2 {
+}
+
+:i32.store testrmode, testrmode2 is op=0x36  ... & testrmode; testrmode2 {
+}
+
+:i32.load testrmode, testrmode2 is op=0x28  ... & testrmode; testrmode2 {
+}
+
+:f32.load testrmode, testrmode2 is op=0x2a  ... & testrmode; testrmode2 {
+}
+
+
+:i32.const testrmode is op=0x41  ... & testrmode {
+}
+
+:get_global testrmode is op=0x23 ... & testrmode {   
+}
+
+:set_global testrmode is op=0x24 ... & testrmode {   
+}
+
+
+:set_local testrmode is op=0x21 ... & testrmode {   
+}
+
+:get_local testrmode is op=0x20 ... & testrmode {   
+}
+
+
+:br_if testrmode is op=0x0D ... & testrmode {   
+}
+
+:br_table testrmode is op=0x0E ... & testrmode {   
+}
+
+
+:i32.sub is op=0x6B {   
+}
+
+:i32.add is op=0x6A {   
+}
+
+:i32.mul is op=0x6C {   
+}
+
+:i32.div is op=0x6D {   
+}
+
+:i32.div_u is op=0x6E {   
+}
+
+:i32.rem_s is op=0x6f {   
+}
+
+:i32.rem_u is op=0x70 {   
+}
+
+:i32.and is op=0x71 {   
+}
+
+:i32.or is op=0x72 {   
+}
+
+:i32.xor is op=0x73 {   
+}
+
+:i32.shl is op=0x74 {   
+}
+
+:i32.shl_s is op=0x75 {   
+}
+
+:i32.shr_u is op=0x76 {   
+}
+
+:i32.rotl is op=0x77 {   
+}
+
+:i32.rotr is op=0x78 {   
+}
+
+:i32.clz is op=0x67 {   
+}
+
+:i32.ctz is op=0x68 {   
+}
+
+:i32.popcnt is op=0x69 {   
+}
+
+
+###############################################################################
+# Equality instructions
+###############################################################################
+
+:i32.eqz is op=0x45 {
+}
+
+:i32.ne is op=0x47 {
+}
+
+:i32.eq is op=0x46 {
+}
+
+:i32.lt_s is op=0x48 {
+}
+
+:i32.lt_u is op=0x49 {
+}
+
+:i32.le_s is op=0x4C {
+}
+
+:i32.le_u is op=0x4D {
+}
+
+:i32.gt_s is op=0x4A {
+}
+
+:i32.gt_u is op=0x4B {
+}
+
+:i32.ge_s is op=0x4E {
+}
+
+:i32.ge_u is op=0x4F {
+}
+
 
 #:i32.const addrmode is jop=0x41 ... & addrmode {
     #_value:$(DWORD) = addrmode;
