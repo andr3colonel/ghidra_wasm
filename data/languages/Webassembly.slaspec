@@ -3,13 +3,13 @@
 define endian=little;
 define alignment=1;
 
-@define DWORD "4"		# Number of bytes in the Java Word
+@define DWORD "4"       # Number of bytes in the Java Word
 @define QWORD "8"
 
 
 define space ram                 type=ram_space      size=$(DWORD) default;
 define space register            type=register_space size=$(DWORD);
-define space constantPool		 type=ram_space      size=$(DWORD);
+define space constantPool        type=ram_space      size=$(DWORD);
 define space localVariableArray  type=ram_space      size=$(DWORD);
 define space parameterSpace      type=ram_space      size=$(DWORD);
 
@@ -19,23 +19,63 @@ define register offset = 0x0 size=$(DWORD) [SP PC];
 ###############################################################################
 # TOKENS
 ###############################################################################
-define token opcode (8)
-	op    = (0,7)
-;
+
+define token base(8)
+    op=(0, 7);
+define token leb128_8(8)
+    byte8_0 = (0, 6)
+    flag8_0 = (7, 7);
+define token leb128_16(16)
+    byte16_0 = (0, 6)
+    byte16_1 = (8, 14)
+    flag16_0 = (7, 7)
+    flag16_1 = (15, 15);
+define token leb128_24(32)
+    op_24=(0, 7)
+    byte24_0 = (8, 14)
+    flag24_0 = (15, 15)
+    byte24_1 = (16, 22)
+    flag24_1 = (23, 23)
+    byte24_2 = (24, 30)
+    flag24_2 = (31, 31);
+define token leb128_32(40)
+    op_32=(0, 7)
+    byte32_0 = (8, 14)
+    flag32_0 = (15, 15)
+    byte32_1 = (16, 22)
+    flag32_1 = (23, 23)
+    byte32_2 = (24, 30)
+    flag32_2 = (31, 31)
+    byte32_3 = (32, 38)
+    flag32_3 = (39, 39);
+define token leb128_40(48)
+    op_40=(0, 7)
+    byte40_0 = (8, 14)
+    flag40_0 = (15, 15)
+    byte40_1 = (16, 22)
+    flag40_1 = (23, 23)
+    byte40_2 = (24, 30)
+    flag40_2 = (31, 31)
+    byte40_3 = (32, 38)
+    flag40_3 = (39, 39)
+    byte40_4 = (40, 47)
+    flag40_4 = (48, 48);
+
+
 
 ###############################################################################
 # Macros
 ###############################################################################
 macro push(x)
 {
-	SP = SP - $(DWORD);
-	*:$(DWORD) SP = x;
+    SP = SP - $(DWORD);
+    *:$(DWORD) SP = x;
 }
 
 macro pop(x)
 {
-	x = *:$(DWORD) SP;
-	SP = SP + $(DWORD);
+    x = *:$(DWORD) SP;
+    SP = SP + $(DWORD);
 }
 
 macro push2(x)
@@ -52,10 +92,29 @@ macro pop2(x)
 
 
 ###############################################################################
+# LEB128
+###############################################################################
+
+
+testrmode: val is op; (flag40_0=1 & flag40_1=1 & flag40_2=1 & flag40_3=1 & flag40_4=0) & byte40_0 & byte40_1 & byte40_2 & byte40_3 & byte40_4 [ val = byte40_0 | byte40_1 << 7 | byte40_2 << 14| byte40_3 << 21| byte40_4 << 28; ] {tmp:4=0; export tmp;}
+testrmode: val is op; (flag32_0=1 & flag32_1=1 & flag32_2=1 & flag32_3=0) & byte32_0 & byte32_1 & byte32_2 & byte32_3 [ val = byte32_0 | byte32_1 << 7 | byte32_2 << 14| byte32_3 << 21; ] {tmp:4=0; export tmp;}
+testrmode: val is op; (flag24_0=1 & flag24_1=1 & flag24_2=0) & byte24_0 & byte24_1 & byte24_2 [ val = byte24_0 | byte24_1 << 7 | byte24_1 << 14; ] {tmp:4=0; export tmp;}
+testrmode: val is op; (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = byte16_0 | byte16_1 <<7; ] {tmp:4=0; export tmp;}
+testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
+
+###############################################################################
 # Constructors
 ###############################################################################
 :nop is op=0x00
 {
 
 }
+
+:i32.const testrmode is op=0x41 ... & testrmode {
+}
+
+#:i32.const addrmode is jop=0x41 ... & addrmode {
+    #_value:$(DWORD) = addrmode;
+    #push(_value);
+#}
 

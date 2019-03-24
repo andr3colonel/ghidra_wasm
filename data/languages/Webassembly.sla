@@ -1,4 +1,4 @@
-<sleigh bigendian="false" align="1" uniqbase="0x60">
+<sleigh bigendian="false" align="1" uniqbase="0xb0">
 <spaces defaultspace="ram">
 <space_unique name="unique" index="1" bigendian="false" delay="0" size="4" physical="true"/>
 <space name="ram" index="2" bigendian="false" delay="1" size="4" physical="true"/>
@@ -7,8 +7,14 @@
 <space name="localVariableArray" index="5" bigendian="false" delay="1" size="4" physical="true"/>
 <space name="parameterSpace" index="6" bigendian="false" delay="1" size="4" physical="true"/>
 </spaces>
-<symbol_table scopesize="1" symbolsize="7">
+<symbol_table scopesize="7" symbolsize="66">
 <scope id="0x0" parent="0x0"/>
+<scope id="0x1" parent="0x0"/>
+<scope id="0x2" parent="0x0"/>
+<scope id="0x3" parent="0x0"/>
+<scope id="0x4" parent="0x0"/>
+<scope id="0x5" parent="0x0"/>
+<scope id="0x6" parent="0x0"/>
 <subtable_sym_head name="instruction" id="0x0" scope="0x0"/>
 <start_sym_head name="inst_start" id="0x1" scope="0x0"/>
 <end_sym_head name="inst_next" id="0x2" scope="0x0"/>
@@ -16,12 +22,83 @@
 <varnode_sym_head name="SP" id="0x4" scope="0x0"/>
 <varnode_sym_head name="PC" id="0x5" scope="0x0"/>
 <value_sym_head name="op" id="0x6" scope="0x0"/>
-<subtable_sym name="instruction" id="0x0" scope="0x0" numct="1">
-<constructor parent="0x0" first="1" length="1" line="57">
+<value_sym_head name="byte8_0" id="0x7" scope="0x0"/>
+<value_sym_head name="flag8_0" id="0x8" scope="0x0"/>
+<value_sym_head name="byte16_0" id="0x9" scope="0x0"/>
+<value_sym_head name="byte16_1" id="0xa" scope="0x0"/>
+<value_sym_head name="flag16_0" id="0xb" scope="0x0"/>
+<value_sym_head name="flag16_1" id="0xc" scope="0x0"/>
+<value_sym_head name="op_24" id="0xd" scope="0x0"/>
+<value_sym_head name="byte24_0" id="0xe" scope="0x0"/>
+<value_sym_head name="flag24_0" id="0xf" scope="0x0"/>
+<value_sym_head name="byte24_1" id="0x10" scope="0x0"/>
+<value_sym_head name="flag24_1" id="0x11" scope="0x0"/>
+<value_sym_head name="byte24_2" id="0x12" scope="0x0"/>
+<value_sym_head name="flag24_2" id="0x13" scope="0x0"/>
+<value_sym_head name="op_32" id="0x14" scope="0x0"/>
+<value_sym_head name="byte32_0" id="0x15" scope="0x0"/>
+<value_sym_head name="flag32_0" id="0x16" scope="0x0"/>
+<value_sym_head name="byte32_1" id="0x17" scope="0x0"/>
+<value_sym_head name="flag32_1" id="0x18" scope="0x0"/>
+<value_sym_head name="byte32_2" id="0x19" scope="0x0"/>
+<value_sym_head name="flag32_2" id="0x1a" scope="0x0"/>
+<value_sym_head name="byte32_3" id="0x1b" scope="0x0"/>
+<value_sym_head name="flag32_3" id="0x1c" scope="0x0"/>
+<value_sym_head name="op_40" id="0x1d" scope="0x0"/>
+<value_sym_head name="byte40_0" id="0x1e" scope="0x0"/>
+<value_sym_head name="flag40_0" id="0x1f" scope="0x0"/>
+<value_sym_head name="byte40_1" id="0x20" scope="0x0"/>
+<value_sym_head name="flag40_1" id="0x21" scope="0x0"/>
+<value_sym_head name="byte40_2" id="0x22" scope="0x0"/>
+<value_sym_head name="flag40_2" id="0x23" scope="0x0"/>
+<value_sym_head name="byte40_3" id="0x24" scope="0x0"/>
+<value_sym_head name="flag40_3" id="0x25" scope="0x0"/>
+<value_sym_head name="byte40_4" id="0x26" scope="0x0"/>
+<value_sym_head name="flag40_4" id="0x27" scope="0x0"/>
+<subtable_sym_head name="testrmode" id="0x28" scope="0x0"/>
+<operand_sym_head name="val" id="0x29" scope="0x1"/>
+<operand_sym_head name="op" id="0x2a" scope="0x1"/>
+<operand_sym_head name="byte40_0" id="0x2b" scope="0x1"/>
+<operand_sym_head name="byte40_1" id="0x2c" scope="0x1"/>
+<operand_sym_head name="byte40_2" id="0x2d" scope="0x1"/>
+<operand_sym_head name="byte40_3" id="0x2e" scope="0x1"/>
+<operand_sym_head name="byte40_4" id="0x2f" scope="0x1"/>
+<operand_sym_head name="val" id="0x30" scope="0x2"/>
+<operand_sym_head name="op" id="0x31" scope="0x2"/>
+<operand_sym_head name="byte32_0" id="0x32" scope="0x2"/>
+<operand_sym_head name="byte32_1" id="0x33" scope="0x2"/>
+<operand_sym_head name="byte32_2" id="0x34" scope="0x2"/>
+<operand_sym_head name="byte32_3" id="0x35" scope="0x2"/>
+<operand_sym_head name="val" id="0x36" scope="0x3"/>
+<operand_sym_head name="op" id="0x37" scope="0x3"/>
+<operand_sym_head name="byte24_0" id="0x38" scope="0x3"/>
+<operand_sym_head name="byte24_1" id="0x39" scope="0x3"/>
+<operand_sym_head name="byte24_2" id="0x3a" scope="0x3"/>
+<operand_sym_head name="val" id="0x3b" scope="0x4"/>
+<operand_sym_head name="op" id="0x3c" scope="0x4"/>
+<operand_sym_head name="byte16_0" id="0x3d" scope="0x4"/>
+<operand_sym_head name="byte16_1" id="0x3e" scope="0x4"/>
+<operand_sym_head name="byte8_0" id="0x3f" scope="0x5"/>
+<operand_sym_head name="op" id="0x40" scope="0x5"/>
+<operand_sym_head name="testrmode" id="0x41" scope="0x6"/>
+<subtable_sym name="instruction" id="0x0" scope="0x0" numct="2">
+<constructor parent="0x0" first="1" length="1" line="108">
 <print piece="nop"/>
 <construct_tpl>
 <null/></construct_tpl>
 </constructor>
+<constructor parent="0x0" first="1" length="1" line="113">
+<oper id="0x41"/>
+<print piece="i32.const"/>
+<print piece=" "/>
+<opprint id="0"/>
+<construct_tpl>
+<null/><op_tpl code="BUILD"><null/>
+<varnode_tpl><const_tpl type="spaceid" name="const"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+</op_tpl>
+</construct_tpl>
+</constructor>
+<decision number="2" context="false" start="1" size="1">
 <decision number="1" context="false" start="0" size="0">
 <pair id="0">
 <instruct_pat>
@@ -30,6 +107,16 @@
 </pat_block>
 </instruct_pat>
 </pair>
+</decision>
+<decision number="1" context="false" start="0" size="0">
+<pair id="1">
+<instruct_pat>
+<pat_block offset="0" nonzero="1">
+  <mask_word mask="0xff000000" val="0x41000000"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
 </decision>
 </subtable_sym>
 <start_sym name="inst_start" id="0x1" scope="0x0"/>
@@ -43,5 +130,409 @@
 <value_sym name="op" id="0x6" scope="0x0">
 <tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
 </value_sym>
+<value_sym name="byte8_0" id="0x7" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="6" bytestart="0" byteend="0" shift="0"/>
+</value_sym>
+<value_sym name="flag8_0" id="0x8" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="7" bitend="7" bytestart="0" byteend="0" shift="7"/>
+</value_sym>
+<value_sym name="byte16_0" id="0x9" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="6" bytestart="0" byteend="0" shift="0"/>
+</value_sym>
+<value_sym name="byte16_1" id="0xa" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</value_sym>
+<value_sym name="flag16_0" id="0xb" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="7" bitend="7" bytestart="0" byteend="0" shift="7"/>
+</value_sym>
+<value_sym name="flag16_1" id="0xc" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="15" bitend="15" bytestart="1" byteend="1" shift="7"/>
+</value_sym>
+<value_sym name="op_24" id="0xd" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</value_sym>
+<value_sym name="byte24_0" id="0xe" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</value_sym>
+<value_sym name="flag24_0" id="0xf" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="15" bitend="15" bytestart="1" byteend="1" shift="7"/>
+</value_sym>
+<value_sym name="byte24_1" id="0x10" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="16" bitend="22" bytestart="2" byteend="2" shift="0"/>
+</value_sym>
+<value_sym name="flag24_1" id="0x11" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="23" bitend="23" bytestart="2" byteend="2" shift="7"/>
+</value_sym>
+<value_sym name="byte24_2" id="0x12" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="24" bitend="30" bytestart="3" byteend="3" shift="0"/>
+</value_sym>
+<value_sym name="flag24_2" id="0x13" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="31" bitend="31" bytestart="3" byteend="3" shift="7"/>
+</value_sym>
+<value_sym name="op_32" id="0x14" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</value_sym>
+<value_sym name="byte32_0" id="0x15" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</value_sym>
+<value_sym name="flag32_0" id="0x16" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="15" bitend="15" bytestart="1" byteend="1" shift="7"/>
+</value_sym>
+<value_sym name="byte32_1" id="0x17" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="16" bitend="22" bytestart="2" byteend="2" shift="0"/>
+</value_sym>
+<value_sym name="flag32_1" id="0x18" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="23" bitend="23" bytestart="2" byteend="2" shift="7"/>
+</value_sym>
+<value_sym name="byte32_2" id="0x19" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="24" bitend="30" bytestart="3" byteend="3" shift="0"/>
+</value_sym>
+<value_sym name="flag32_2" id="0x1a" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="31" bitend="31" bytestart="3" byteend="3" shift="7"/>
+</value_sym>
+<value_sym name="byte32_3" id="0x1b" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="38" bytestart="4" byteend="4" shift="0"/>
+</value_sym>
+<value_sym name="flag32_3" id="0x1c" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="39" bitend="39" bytestart="4" byteend="4" shift="7"/>
+</value_sym>
+<value_sym name="op_40" id="0x1d" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</value_sym>
+<value_sym name="byte40_0" id="0x1e" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</value_sym>
+<value_sym name="flag40_0" id="0x1f" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="15" bitend="15" bytestart="1" byteend="1" shift="7"/>
+</value_sym>
+<value_sym name="byte40_1" id="0x20" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="16" bitend="22" bytestart="2" byteend="2" shift="0"/>
+</value_sym>
+<value_sym name="flag40_1" id="0x21" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="23" bitend="23" bytestart="2" byteend="2" shift="7"/>
+</value_sym>
+<value_sym name="byte40_2" id="0x22" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="24" bitend="30" bytestart="3" byteend="3" shift="0"/>
+</value_sym>
+<value_sym name="flag40_2" id="0x23" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="31" bitend="31" bytestart="3" byteend="3" shift="7"/>
+</value_sym>
+<value_sym name="byte40_3" id="0x24" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="38" bytestart="4" byteend="4" shift="0"/>
+</value_sym>
+<value_sym name="flag40_3" id="0x25" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="39" bitend="39" bytestart="4" byteend="4" shift="7"/>
+</value_sym>
+<value_sym name="byte40_4" id="0x26" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="40" bitend="47" bytestart="5" byteend="5" shift="0"/>
+</value_sym>
+<value_sym name="flag40_4" id="0x27" scope="0x0">
+<tokenfield bigendian="false" signbit="false" bitstart="48" bitend="48" bytestart="6" byteend="6" shift="0"/>
+</value_sym>
+<subtable_sym name="testrmode" id="0x28" scope="0x0" numct="5">
+<constructor parent="0x28" first="1" length="7" line="99">
+<oper id="0x2a"/>
+<oper id="0x2b"/>
+<oper id="0x2c"/>
+<oper id="0x2d"/>
+<oper id="0x2e"/>
+<oper id="0x2f"/>
+<oper id="0x29"/>
+<opprint id="6"/>
+<construct_tpl>
+<handle_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x4"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x60"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/></handle_tpl>
+<op_tpl code="COPY"><varnode_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x60"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+<varnode_tpl><const_tpl type="spaceid" name="const"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+</op_tpl>
+</construct_tpl>
+</constructor>
+<constructor parent="0x28" first="1" length="6" line="100">
+<oper id="0x31"/>
+<oper id="0x32"/>
+<oper id="0x33"/>
+<oper id="0x34"/>
+<oper id="0x35"/>
+<oper id="0x30"/>
+<opprint id="5"/>
+<construct_tpl>
+<handle_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x4"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x70"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/></handle_tpl>
+<op_tpl code="COPY"><varnode_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x70"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+<varnode_tpl><const_tpl type="spaceid" name="const"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+</op_tpl>
+</construct_tpl>
+</constructor>
+<constructor parent="0x28" first="1" length="5" line="101">
+<oper id="0x37"/>
+<oper id="0x38"/>
+<oper id="0x39"/>
+<oper id="0x3a"/>
+<oper id="0x36"/>
+<opprint id="4"/>
+<construct_tpl>
+<handle_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x4"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x80"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/></handle_tpl>
+<op_tpl code="COPY"><varnode_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x80"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+<varnode_tpl><const_tpl type="spaceid" name="const"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+</op_tpl>
+</construct_tpl>
+</constructor>
+<constructor parent="0x28" first="1" length="3" line="102">
+<oper id="0x3c"/>
+<oper id="0x3d"/>
+<oper id="0x3e"/>
+<oper id="0x3b"/>
+<opprint id="3"/>
+<construct_tpl>
+<handle_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x4"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x90"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/></handle_tpl>
+<op_tpl code="COPY"><varnode_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x90"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+<varnode_tpl><const_tpl type="spaceid" name="const"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+</op_tpl>
+</construct_tpl>
+</constructor>
+<constructor parent="0x28" first="1" length="2" line="103">
+<oper id="0x40"/>
+<oper id="0x3f"/>
+<opprint id="1"/>
+<construct_tpl>
+<handle_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0x4"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0xa0"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/><const_tpl type="real" val="0x0"/></handle_tpl>
+<op_tpl code="COPY"><varnode_tpl><const_tpl type="spaceid" name="unique"/><const_tpl type="real" val="0xa0"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+<varnode_tpl><const_tpl type="spaceid" name="const"/><const_tpl type="real" val="0x1"/><const_tpl type="real" val="0x4"/></varnode_tpl>
+</op_tpl>
+</construct_tpl>
+</constructor>
+<decision number="5" context="false" start="16" size="1">
+<decision number="2" context="false" start="8" size="1">
+<decision number="1" context="false" start="0" size="0">
+<pair id="4">
+<instruct_pat>
+<pat_block offset="1" nonzero="1">
+  <mask_word mask="0x80000000" val="0x0"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+<decision number="1" context="false" start="0" size="0">
+<pair id="3">
+<instruct_pat>
+<pat_block offset="1" nonzero="2">
+  <mask_word mask="0x80800000" val="0x80000000"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+</decision>
+<decision number="4" context="false" start="32" size="1">
+<decision number="2" context="false" start="0" size="0">
+<pair id="2">
+<instruct_pat>
+<pat_block offset="2" nonzero="3">
+  <mask_word mask="0x80808000" val="0x80800000"/>
+</pat_block>
+</instruct_pat>
+</pair>
+<pair id="4">
+<instruct_pat>
+<pat_block offset="1" nonzero="1">
+  <mask_word mask="0x80000000" val="0x0"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+<decision number="3" context="false" start="40" size="1">
+<decision number="2" context="false" start="0" size="0">
+<pair id="1">
+<instruct_pat>
+<pat_block offset="2" nonzero="4">
+  <mask_word mask="0x80808080" val="0x80808000"/>
+</pat_block>
+</instruct_pat>
+</pair>
+<pair id="4">
+<instruct_pat>
+<pat_block offset="1" nonzero="1">
+  <mask_word mask="0x80000000" val="0x0"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+<decision number="2" context="false" start="0" size="0">
+<pair id="0">
+<instruct_pat>
+<pat_block offset="2" nonzero="6">
+  <mask_word mask="0x80808080" val="0x80808080"/>
+  <mask_word mask="0x10000" val="0x0"/>
+</pat_block>
+</instruct_pat>
+</pair>
+<pair id="4">
+<instruct_pat>
+<pat_block offset="1" nonzero="1">
+  <mask_word mask="0x80000000" val="0x0"/>
+</pat_block>
+</instruct_pat>
+</pair>
+</decision>
+</decision>
+</decision>
+</decision>
+</subtable_sym>
+<operand_sym name="val" id="0x29" scope="0x1" off="0" base="-1" minlen="0" index="6">
+<operand_exp index="6" table="0x28" ct="0x0"/>
+<or_exp>
+<or_exp>
+<or_exp>
+<or_exp>
+<operand_exp index="1" table="0x28" ct="0x0"/>
+<lshift_exp>
+<operand_exp index="2" table="0x28" ct="0x0"/>
+<intb val="7"/>
+</lshift_exp>
+</or_exp>
+<lshift_exp>
+<operand_exp index="3" table="0x28" ct="0x0"/>
+<intb val="14"/>
+</lshift_exp>
+</or_exp>
+<lshift_exp>
+<operand_exp index="4" table="0x28" ct="0x0"/>
+<intb val="21"/>
+</lshift_exp>
+</or_exp>
+<lshift_exp>
+<operand_exp index="5" table="0x28" ct="0x0"/>
+<intb val="28"/>
+</lshift_exp>
+</or_exp>
+</operand_sym>
+<operand_sym name="op" id="0x2a" scope="0x1" off="0" base="-1" minlen="1" index="0">
+<operand_exp index="0" table="0x28" ct="0x0"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="byte40_0" id="0x2b" scope="0x1" off="1" base="-1" minlen="6" index="1">
+<operand_exp index="1" table="0x28" ct="0x0"/>
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</operand_sym>
+<operand_sym name="byte40_1" id="0x2c" scope="0x1" off="1" base="-1" minlen="6" index="2">
+<operand_exp index="2" table="0x28" ct="0x0"/>
+<tokenfield bigendian="false" signbit="false" bitstart="16" bitend="22" bytestart="2" byteend="2" shift="0"/>
+</operand_sym>
+<operand_sym name="byte40_2" id="0x2d" scope="0x1" off="1" base="-1" minlen="6" index="3">
+<operand_exp index="3" table="0x28" ct="0x0"/>
+<tokenfield bigendian="false" signbit="false" bitstart="24" bitend="30" bytestart="3" byteend="3" shift="0"/>
+</operand_sym>
+<operand_sym name="byte40_3" id="0x2e" scope="0x1" off="1" base="-1" minlen="6" index="4">
+<operand_exp index="4" table="0x28" ct="0x0"/>
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="38" bytestart="4" byteend="4" shift="0"/>
+</operand_sym>
+<operand_sym name="byte40_4" id="0x2f" scope="0x1" off="1" base="-1" minlen="6" index="5">
+<operand_exp index="5" table="0x28" ct="0x0"/>
+<tokenfield bigendian="false" signbit="false" bitstart="40" bitend="47" bytestart="5" byteend="5" shift="0"/>
+</operand_sym>
+<operand_sym name="val" id="0x30" scope="0x2" off="0" base="-1" minlen="0" index="5">
+<operand_exp index="5" table="0x28" ct="0x1"/>
+<or_exp>
+<or_exp>
+<or_exp>
+<operand_exp index="1" table="0x28" ct="0x1"/>
+<lshift_exp>
+<operand_exp index="2" table="0x28" ct="0x1"/>
+<intb val="7"/>
+</lshift_exp>
+</or_exp>
+<lshift_exp>
+<operand_exp index="3" table="0x28" ct="0x1"/>
+<intb val="14"/>
+</lshift_exp>
+</or_exp>
+<lshift_exp>
+<operand_exp index="4" table="0x28" ct="0x1"/>
+<intb val="21"/>
+</lshift_exp>
+</or_exp>
+</operand_sym>
+<operand_sym name="op" id="0x31" scope="0x2" off="0" base="-1" minlen="1" index="0">
+<operand_exp index="0" table="0x28" ct="0x1"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="byte32_0" id="0x32" scope="0x2" off="1" base="-1" minlen="5" index="1">
+<operand_exp index="1" table="0x28" ct="0x1"/>
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</operand_sym>
+<operand_sym name="byte32_1" id="0x33" scope="0x2" off="1" base="-1" minlen="5" index="2">
+<operand_exp index="2" table="0x28" ct="0x1"/>
+<tokenfield bigendian="false" signbit="false" bitstart="16" bitend="22" bytestart="2" byteend="2" shift="0"/>
+</operand_sym>
+<operand_sym name="byte32_2" id="0x34" scope="0x2" off="1" base="-1" minlen="5" index="3">
+<operand_exp index="3" table="0x28" ct="0x1"/>
+<tokenfield bigendian="false" signbit="false" bitstart="24" bitend="30" bytestart="3" byteend="3" shift="0"/>
+</operand_sym>
+<operand_sym name="byte32_3" id="0x35" scope="0x2" off="1" base="-1" minlen="5" index="4">
+<operand_exp index="4" table="0x28" ct="0x1"/>
+<tokenfield bigendian="false" signbit="false" bitstart="32" bitend="38" bytestart="4" byteend="4" shift="0"/>
+</operand_sym>
+<operand_sym name="val" id="0x36" scope="0x3" off="0" base="-1" minlen="0" index="4">
+<operand_exp index="4" table="0x28" ct="0x2"/>
+<or_exp>
+<or_exp>
+<operand_exp index="1" table="0x28" ct="0x2"/>
+<lshift_exp>
+<operand_exp index="2" table="0x28" ct="0x2"/>
+<intb val="7"/>
+</lshift_exp>
+</or_exp>
+<lshift_exp>
+<operand_exp index="2" table="0x28" ct="0x2"/>
+<intb val="14"/>
+</lshift_exp>
+</or_exp>
+</operand_sym>
+<operand_sym name="op" id="0x37" scope="0x3" off="0" base="-1" minlen="1" index="0">
+<operand_exp index="0" table="0x28" ct="0x2"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="byte24_0" id="0x38" scope="0x3" off="1" base="-1" minlen="4" index="1">
+<operand_exp index="1" table="0x28" ct="0x2"/>
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</operand_sym>
+<operand_sym name="byte24_1" id="0x39" scope="0x3" off="1" base="-1" minlen="4" index="2">
+<operand_exp index="2" table="0x28" ct="0x2"/>
+<tokenfield bigendian="false" signbit="false" bitstart="16" bitend="22" bytestart="2" byteend="2" shift="0"/>
+</operand_sym>
+<operand_sym name="byte24_2" id="0x3a" scope="0x3" off="1" base="-1" minlen="4" index="3">
+<operand_exp index="3" table="0x28" ct="0x2"/>
+<tokenfield bigendian="false" signbit="false" bitstart="24" bitend="30" bytestart="3" byteend="3" shift="0"/>
+</operand_sym>
+<operand_sym name="val" id="0x3b" scope="0x4" off="0" base="-1" minlen="0" index="3">
+<operand_exp index="3" table="0x28" ct="0x3"/>
+<or_exp>
+<operand_exp index="1" table="0x28" ct="0x3"/>
+<lshift_exp>
+<operand_exp index="2" table="0x28" ct="0x3"/>
+<intb val="7"/>
+</lshift_exp>
+</or_exp>
+</operand_sym>
+<operand_sym name="op" id="0x3c" scope="0x4" off="0" base="-1" minlen="1" index="0">
+<operand_exp index="0" table="0x28" ct="0x3"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="byte16_0" id="0x3d" scope="0x4" off="1" base="-1" minlen="2" index="1">
+<operand_exp index="1" table="0x28" ct="0x3"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="6" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="byte16_1" id="0x3e" scope="0x4" off="1" base="-1" minlen="2" index="2">
+<operand_exp index="2" table="0x28" ct="0x3"/>
+<tokenfield bigendian="false" signbit="false" bitstart="8" bitend="14" bytestart="1" byteend="1" shift="0"/>
+</operand_sym>
+<operand_sym name="byte8_0" id="0x3f" scope="0x5" off="1" base="-1" minlen="1" index="1">
+<operand_exp index="1" table="0x28" ct="0x4"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="6" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="op" id="0x40" scope="0x5" off="0" base="-1" minlen="1" index="0">
+<operand_exp index="0" table="0x28" ct="0x4"/>
+<tokenfield bigendian="false" signbit="false" bitstart="0" bitend="7" bytestart="0" byteend="0" shift="0"/>
+</operand_sym>
+<operand_sym name="testrmode" id="0x41" scope="0x6" subsym="0x28" off="0" base="-1" minlen="1" index="0">
+<operand_exp index="0" table="0x0" ct="0x1"/>
+</operand_sym>
 </symbol_table>
 </sleigh>
