@@ -24,6 +24,15 @@ public class WasmModule  {
 		}
 	}
 
+	/*TODO: put sections to map*/
+	public WasmSection getSection(WasmSectionId id) {
+		for (WasmSection section: sections) {
+			if (section.getId() == id) {
+				return section;
+			}
+		}
+		return null;
+	}
 	
 	public WasmHeader getHeader() {
 		return header;

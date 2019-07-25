@@ -26,6 +26,9 @@ public class WasmImportSection implements WasmPayload {
 		}
 	}
 
+	public int getCount() {
+		return count.getValue();
+	}
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {

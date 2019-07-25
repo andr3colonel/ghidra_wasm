@@ -52,11 +52,14 @@ import wasm.format.Utils;
 import wasm.format.WasmConstants;
 import wasm.format.WasmHeader;
 import wasm.format.sections.WasmCodeSection;
+import wasm.format.sections.WasmExportSection;
+import wasm.format.sections.WasmImportSection;
 import wasm.format.sections.WasmSection;
 import wasm.format.sections.WasmSection.WasmSectionId;
+import wasm.format.sections.structures.WasmExportEntry;
 import wasm.format.sections.structures.WasmFunctionBody;
 import wasm.format.sections.structures.WasmLocalEntry.WasmLocalType;
-
+import wasm.format.sections.WasmSection.WasmSectionId;;
 /**
  * TODO: Provide class-level documentation that describes what this loader does.
  */
@@ -151,6 +154,13 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		}
 	}
 
+	private String getMethodName(WasmExportSection exports, int id) {
+		WasmExportEntry entry = exports.findMethod(id);
+		if (entry != null) {
+			return entry.getName();
+		}
+		return "Method_" + id;
+	}
 	
 	@Override
 	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
@@ -177,21 +187,26 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 			markupSections(program, module, monitor, inputStream);
 			monitor.setMessage( "Wasm Loader: Create byte code" );
 			
-			for (WasmSection section: module.getSections()) {
+			for (WasmSection section : module.getSections()) {
 				monitor.setMessage("Loaded " + section.getId().toString());
 				if (section.getId() == WasmSectionId.SEC_CODE) {
 					WasmCodeSection codeSection = (WasmCodeSection)section.getPayload();
 					long code_offset = section.getPayloadOffset();
 					int lookupOffset = 0;
-					for (WasmFunctionBody method: codeSection.getFunctions()) {
+					for (int i = 0; i < codeSection.getFunctions().size(); ++i) {
+						WasmFunctionBody method = codeSection.getFunctions().get(i);
 						long method_offset = code_offset + method.getOffset();
 						Address methodAddress = Utils.toAddr( program, Utils.METHOD_ADDRESS + method_offset );
 						Address methodend = Utils.toAddr( program, Utils.METHOD_ADDRESS + method_offset + method.getInstructions().length);
 						Address methodIndexAddress = Utils.toAddr( program, Utils.LOOKUP_ADDRESS + lookupOffset );
 						byte [] instructionBytes = method.getInstructions();
 						program.getMemory( ).setBytes( methodAddress, instructionBytes );
-						program.getMemory( ).setInt( methodIndexAddress, (int) methodAddress.getOffset( ) );
-						program.getFunctionManager().createFunction("Method_" + lookupOffset, methodAddress, new AddressSet(methodAddress, methodend), SourceType.ANALYSIS);
+						program.getMemory( ).setInt( methodIndexAddress, (int) methodAddress.getOffset( ));
+						//The function index space begins with an index for each imported function, 
+						//in the order the imports appear in the Import Section, if present, 
+						//followed by an index for each function in the Function Section, 
+						int imports_offset = ((WasmImportSection)module.getSection(WasmSectionId.SEC_IMPORT).getPayload()).getCount();
+						program.getFunctionManager().createFunction(getMethodName((WasmExportSection)module.getSection(WasmSectionId.SEC_EXPORT).getPayload(), i + imports_offset), methodAddress, new AddressSet(methodAddress, methodend), SourceType.ANALYSIS);
 						lookupOffset += 4;
 					}
 				}
