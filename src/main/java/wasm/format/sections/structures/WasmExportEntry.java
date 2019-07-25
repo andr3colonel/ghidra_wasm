@@ -10,19 +10,41 @@ import ghidra.program.model.data.Structure;
 import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
+import wasm.format.sections.WasmSection.WasmSectionId;
 
 public class WasmExportEntry implements StructConverter {
 	
 	Leb128 field_len;
 	String name;
-	byte kind;
+	WasmExternalKind kind;
 	Leb128 index;
 	
+	
+	public enum WasmExternalKind {
+		KIND_FUNCTION,
+		KIND_TABLE,
+		KIND_MEMORY,
+		KIND_GLOBAL
+	}
+
+
 	public WasmExportEntry (BinaryReader reader) throws IOException {
 		field_len = new Leb128(reader);
 		name = reader.readNextAsciiString(field_len.getValue());
-		kind = reader.readNextByte();
+		kind = WasmExternalKind.values()[reader.readNextByte()]; 
 		index = new Leb128(reader);
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getIndex() {
+		return index.getValue();
+	}
+	
+	public WasmExternalKind getType() {
+		return kind;
 	}
 
 	@Override

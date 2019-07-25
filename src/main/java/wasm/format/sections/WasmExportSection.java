@@ -12,17 +12,29 @@ import ghidra.program.model.data.StructureDataType;
 import ghidra.util.exception.DuplicateNameException;
 import wasm.format.Leb128;
 import wasm.format.sections.structures.WasmExportEntry;
+import wasm.format.sections.structures.WasmExportEntry.WasmExternalKind;
 
 public class WasmExportSection implements WasmPayload {
 
 	private Leb128 count;
 	private List<WasmExportEntry> exports = new ArrayList<WasmExportEntry>();
 	
+	
+		
 	public WasmExportSection (BinaryReader reader) throws IOException {
 		count = new Leb128(reader);
 		for (int i =0; i < count.getValue(); ++i) {
 			exports.add(new WasmExportEntry(reader));
 		}		
+	}
+	
+	public WasmExportEntry findMethod(int id) {
+		for (WasmExportEntry entry: exports) {
+			if (entry.getType() == WasmExternalKind.KIND_FUNCTION && entry.getIndex() == id) {
+				return entry;
+			}
+		}
+		return null;
 	}
 
 
