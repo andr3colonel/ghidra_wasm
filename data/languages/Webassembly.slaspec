@@ -6,6 +6,9 @@ define alignment=1;
 @define DWORD "4"       # Number of bytes in the Java Word
 @define QWORD "8"
 
+# TODO temporary - need to be remove later to keep DWORD/QWORD
+@define SIZE "4" 
+@define DOUBLE_SIZE "8"
 
 define space ram                 type=ram_space      size=$(DWORD) default;
 define space register            type=register_space size=$(DWORD);
@@ -20,16 +23,23 @@ define register offset = 0x0 size=$(DWORD) [SP PC];
 # TOKENS
 ###############################################################################
 
-define token base(8)
-    op=(0, 7);
+# WASM opcode only encoded with 1 Byte
+define token opcode (8)
+    op    = (0,7)
+;
+
 define token leb128_8(8)
     byte8_0 = (0, 6)
-    flag8_0 = (7, 7);
+    flag8_0 = (7, 7)
+;
+
 define token leb128_16(16)
     byte16_0 = (0, 6)
     byte16_1 = (8, 14)
     flag16_0 = (7, 7)
-    flag16_1 = (15, 15);
+    flag16_1 = (15, 15)
+;
+
 define token leb128_24(32)
     op_24=(0, 7)
     byte24_0 = (8, 14)
@@ -37,7 +47,9 @@ define token leb128_24(32)
     byte24_1 = (16, 22)
     flag24_1 = (23, 23)
     byte24_2 = (24, 30)
-    flag24_2 = (31, 31);
+    flag24_2 = (31, 31)
+;
+
 define token leb128_32(40)
     op_32=(0, 7)
     byte32_0 = (8, 14)
@@ -47,7 +59,9 @@ define token leb128_32(40)
     byte32_2 = (24, 30)
     flag32_2 = (31, 31)
     byte32_3 = (32, 38)
-    flag32_3 = (39, 39);
+    flag32_3 = (39, 39)
+;
+
 define token leb128_40(48)
     op_40=(0, 7)
     byte40_0 = (8, 14)
@@ -59,9 +73,10 @@ define token leb128_40(48)
     byte40_3 = (32, 38)
     flag40_3 = (39, 39)
     byte40_4 = (40, 47)
-    flag40_4 = (48, 48);
+    flag40_4 = (48, 48)
+;
 
-
+define pcodeop trap;
 
 ###############################################################################
 # Macros
@@ -109,10 +124,17 @@ testrmode: val is op; (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = by
 testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
 
 ###############################################################################
-# Constructors
+# Control flow operators
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#control-flow-operators-described-here
 ###############################################################################
-:nop is op=0x00
-{}
+
+:unreachable is op=0x00{
+	trap();
+}
+
+:nop is op=0x01{
+    # nothing
+}
 
 :block testrmode is op=0x02 ... & testrmode {
 }
@@ -120,46 +142,78 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
 :loop testrmode is op=0x03 ... & testrmode {
 }
 
-:br testrmode is op=0x0C ... & testrmode {
+:if testrmode is op=0x04 ... & testrmode {
+}
+
+:else is op=0x05 {
 }
 
 :end is op=0x0B {   
 }
 
-:return testrmode is op=0x0F ... & testrmode {   
+:br testrmode is op=0x0C ... & testrmode {
 }
 
-:call testrmode is op=0x10 ... & testrmode {   
+:br_if testrmode is op=0x0D ... & testrmode {
 }
 
+:br_table testrmode is op=0x0E ... & testrmode {
+}
+
+:return is op=0x0F {   
+}
+
+###############################################################################
+# Call operators
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#call-operators-described-here
+###############################################################################
+
+:call testrmode is op=0x10 ... & testrmode { 
+}
 
 :call_indirect testrmode, testrmode2 is op=0x11 ... & testrmode; testrmode2 {
 }
 
+###############################################################################
+# Parametric operators
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#parametric-operators-described-here
+###############################################################################
 
-:i32.load8_u testrmode, testrmode2 is op=0x2d  ... & testrmode; testrmode2 {
+:drop is op=0x1A {
+    # TODO How to determine if the data in i32, f64, f32, f64???
+    _value :$(SIZE) = 0;
+    pop(_value);
 }
 
-:i32.load16_u testrmode, testrmode2 is op=0x2f  ... & testrmode; testrmode2 {
+:select testrmode, testrmode2 is op=0x1B ... & testrmode; testrmode2 {
 }
 
-:i32.store8 testrmode, testrmode2 is op=0x3A  ... & testrmode; testrmode2 {
+###############################################################################
+# Variable access
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#variable-access-described-here
+###############################################################################
+
+:get_local testrmode is op=0x20 ... & testrmode {
+    #LVA = testrmode * $(SIZE);
+    # TODO How to determine if the data in i32, f64, f32, f64???
+    #_value :$(SIZE) = *[localVariableArray]:$(SIZE) (LVA);
+    #push(_value);  
 }
 
-:i32.store16 testrmode, testrmode2 is op=0x3B  ... & testrmode; testrmode2 {
+:set_local testrmode is op=0x21 ... & testrmode { 
+    # TODO How to determine if the data in i32, f64, f32, f64???
+    #_value :$(SIZE) = 0;
+    #pop(_value);
+    #LVA = testrmode * $(SIZE);
+    #*[localVariableArray]:$(SIZE) (LVA) =_value;  
 }
 
-:i32.store testrmode, testrmode2 is op=0x36  ... & testrmode; testrmode2 {
-}
-
-:i32.load testrmode, testrmode2 is op=0x28  ... & testrmode; testrmode2 {
-}
-
-:f32.load testrmode, testrmode2 is op=0x2a  ... & testrmode; testrmode2 {
-}
-
-
-:i32.const testrmode is op=0x41  ... & testrmode {
+:tee_local testrmode is op=0x22 ... & testrmode {
+    #_value :$(SIZE) = 0;
+    #pop(_value);
+    #LVA = testrmode * $(SIZE);
+    #*[localVariableArray]:$(SIZE) (LVA) =_value;
+    #push(_value);   
 }
 
 :get_global testrmode is op=0x23 ... & testrmode {   
@@ -169,110 +223,758 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
 }
 
 
-:set_local testrmode is op=0x21 ... & testrmode {   
+###############################################################################
+# Memory-related operators
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#memory-related-operators-described-here
+###############################################################################
+
+
+:i32.load testrmode, testrmode2 is op=0x28  ... & testrmode; testrmode2 {
 }
 
-:get_local testrmode is op=0x20 ... & testrmode {   
+:i64.load testrmode, testrmode2 is op=0x29  ... & testrmode; testrmode2 {
 }
 
-
-:br_if testrmode is op=0x0D ... & testrmode {   
+:f32.load testrmode, testrmode2 is op=0x2a  ... & testrmode; testrmode2 {
 }
 
-:br_table testrmode is op=0x0E ... & testrmode {   
+:f64.load testrmode, testrmode2 is op=0x2b  ... & testrmode; testrmode2 {
 }
 
-
-:i32.sub is op=0x6B {   
+:i32.load8_s testrmode, testrmode2 is op=0x2c  ... & testrmode; testrmode2 {
 }
 
-:i32.add is op=0x6A {   
+:i32.load8_u testrmode, testrmode2 is op=0x2d  ... & testrmode; testrmode2 {
 }
 
-:i32.mul is op=0x6C {   
+:i32.load16_s testrmode, testrmode2 is op=0x2e  ... & testrmode; testrmode2 {
 }
 
-:i32.div is op=0x6D {   
+:i32.load16_u testrmode, testrmode2 is op=0x2f  ... & testrmode; testrmode2 {
 }
 
-:i32.div_u is op=0x6E {   
+:i64.load8_s testrmode, testrmode2 is op=0x30  ... & testrmode; testrmode2 {
 }
 
-:i32.rem_s is op=0x6f {   
+:i64.load8_u testrmode, testrmode2 is op=0x31  ... & testrmode; testrmode2 {
 }
 
-:i32.rem_u is op=0x70 {   
+:i64.load16_s testrmode, testrmode2 is op=0x32  ... & testrmode; testrmode2 {
 }
 
-:i32.and is op=0x71 {   
+:i64.load16_u testrmode, testrmode2 is op=0x33  ... & testrmode; testrmode2 {
 }
 
-:i32.or is op=0x72 {   
+:i64.load32_s testrmode, testrmode2 is op=0x34  ... & testrmode; testrmode2 {
 }
 
-:i32.xor is op=0x73 {   
+:i64.load32_u testrmode, testrmode2 is op=0x35  ... & testrmode; testrmode2 {
 }
 
-:i32.shl is op=0x74 {   
+:i32.store testrmode, testrmode2 is op=0x36  ... & testrmode; testrmode2 {
 }
 
-:i32.shl_s is op=0x75 {   
+:i64.store testrmode, testrmode2 is op=0x37  ... & testrmode; testrmode2 {
 }
 
-:i32.shr_u is op=0x76 {   
+:f32.store testrmode, testrmode2 is op=0x38  ... & testrmode; testrmode2 {
 }
 
-:i32.rotl is op=0x77 {   
+:f64.store testrmode, testrmode2 is op=0x39  ... & testrmode; testrmode2 {
 }
 
-:i32.rotr is op=0x78 {   
+:i32.store8 testrmode, testrmode2 is op=0x3a  ... & testrmode; testrmode2 {
 }
 
-:i32.clz is op=0x67 {   
+:i32.store16 testrmode, testrmode2 is op=0x3b  ... & testrmode; testrmode2 {
 }
 
-:i32.ctz is op=0x68 {   
+:i64.store8 testrmode, testrmode2 is op=0x3c  ... & testrmode; testrmode2 {
 }
 
-:i32.popcnt is op=0x69 {   
+:i64.store16 testrmode, testrmode2 is op=0x3d  ... & testrmode; testrmode2 {
 }
 
+:i64.store32 testrmode, testrmode2 is op=0x3e  ... & testrmode; testrmode2 {
+}
+
+:current_memory testrmode is op=0x3f  ... & testrmode {
+}
+
+:grow_memory testrmode is op=0x40  ... & testrmode {
+}
 
 ###############################################################################
-# Equality instructions
+# Constants
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#constants-described-here
+###############################################################################
+
+:i32.const testrmode is op=0x41  ... & testrmode {
+}
+
+:i64.const testrmode is op=0x42  ... & testrmode {
+}
+
+:f32.const testrmode is op=0x43  ... & testrmode {
+}
+
+:f64.const testrmode is op=0x44  ... & testrmode {
+}
+
+###############################################################################
+# Comparison operators
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#comparison-operators-described-here
 ###############################################################################
 
 :i32.eqz is op=0x45 {
-}
-
-:i32.ne is op=0x47 {
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value1);
+    _result = sext(_value1 == 0);
+    push(_result);
 }
 
 :i32.eq is op=0x46 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 == _value2);
+    push(_result);
+}
+
+:i32.ne is op=0x47 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 != _value2);
+    push(_result);
 }
 
 :i32.lt_s is op=0x48 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s< _value2);
+    push(_result);
 }
 
 :i32.lt_u is op=0x49 {
 }
 
-:i32.le_s is op=0x4C {
+:i32.gt_s is op=0x4a {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s> _value2);
+    push(_result);
 }
 
-:i32.le_u is op=0x4D {
+:i32.gt_u is op=0x4b {
 }
 
-:i32.gt_s is op=0x4A {
+:i32.le_s is op=0x4c {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s<= _value2);
+    push(_result);
 }
 
-:i32.gt_u is op=0x4B {
+:i32.le_u is op=0x4d {
 }
 
-:i32.ge_s is op=0x4E {
+:i32.ge_s is op=0x4e {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s>= _value2);
+    push(_result);
 }
 
-:i32.ge_u is op=0x4F {
+:i32.ge_u is op=0x4f {
+}
+
+###################################
+
+:i64.eqz is op=0x50 {
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value1);
+    _result = sext(_value1 == 0);
+    push(_result);
+}
+
+:i64.eq is op=0x51 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 == _value2);
+    push(_result);
+}
+
+:i64.ne is op=0x52 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 != _value2);
+    push(_result);
+}
+
+:i64.lt_s is op=0x53 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s< _value2);
+    push(_result);
+}
+
+:i64.lt_u is op=0x54 {
+}
+
+:i64.gt_s is op=0x55 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s> _value2);
+    push(_result);
+}
+
+:i64.gt_u is op=0x56 {
+}
+
+:i64.le_s is op=0x57 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s<= _value2);
+    push(_result);
+}
+
+:i64.le_u is op=0x58 {
+}
+
+:i64.ge_s is op=0x59 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = sext(_value1 s>= _value2);
+    push(_result);
+}
+
+:i64.ge_u is op=0x5a {
+}
+
+###################################
+
+:f32.eq is op=0x5b {
+}
+
+:f32.ne is op=0x5c {
+}
+
+:f32.lt is op=0x5d {
+}
+
+:f32.gt is op=0x5e {
+}
+
+:f32.le is op=0x5f {
+}
+
+:f32.ge is op=0x60 {
+}
+
+###################################
+
+:f64.eq is op=0x61 {
+}
+
+:f64.ne is op=0x62 {
+}
+
+:f64.lt is op=0x63 {
+}
+
+:f64.gt is op=0x64 {
+}
+
+:f64.le is op=0x65 {
+}
+
+:f64.ge is op=0x66 {
+}
+
+
+###############################################################################
+# Numeric operators
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#numeric-operators-described-here
+###############################################################################
+
+:i32.clz is op=0x67 {
+}
+
+:i32.ctz is op=0x68 {
+}
+
+:i32.popcnt is op=0x69 {
+}
+
+:i32.add is op=0x6a {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 + _value2;
+    push(_result);
+}
+
+:i32.sub is op=0x6b {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 - _value2;
+    push(_result);
+}
+
+:i32.mul is op=0x6c {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 * _value2;
+    push(_result);
+}
+
+:i32.div_s is op=0x6d {
+}
+
+:i32.div_u is op=0x6e {
+}
+
+:i32.rem_s is op=0x6f {
+}
+
+:i32.rem_u is op=0x70 {
+}
+
+:i32.and is op=0x71 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 & _value2;
+    push(_result);
+}
+
+:i32.or is op=0x72 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 | _value2;
+    push(_result); 
+}
+
+:i32.xor is op=0x73 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 ^ _value2;
+    push(_result); 
+}
+
+:i32.shl is op=0x74 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 << (_value2 & 0x1f);
+    push(_result);
+}
+
+:i32.shr_s is op=0x75 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 s>> (_value2 & 0x1f);
+    push(_result);
+}
+
+:i32.shr_u is op=0x76 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 >> (_value2 & 0x1f);
+    push(_result);
+}
+
+:i32.rotl is op=0x77 {
+}
+
+:i32.rotr is op=0x78 {
+}
+
+###################################
+
+:i64.clz is op=0x79 {
+}
+
+:i64.ctz is op=0x7a {
+}
+
+:i64.popcnt is op=0x7b {
+}
+
+:i64.add is op=0x7c {
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 + _value2;
+    push2(_result);
+}
+
+:i64.sub is op=0x7d {
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 - _value2;
+    push2(_result);
+}
+
+:i64.mul is op=0x7e {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 * _value2; 
+    push2(_result);
+}
+
+:i64.div_s is op=0x7f {
+}
+
+:i64.div_u is op=0x80 {
+}
+
+:i64.rem_s is op=0x81 {
+}
+
+:i64.rem_u is op=0x82 {
+    _value2 :$(DOUBLE_SIZE) = 0; 
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 s% _value2;
+    push2(_result);
+}
+
+:i64.and is op=0x83 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 & _value2;
+    push2(_result);
+}
+
+:i64.or is op=0x84 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 | _value2;
+    push2(_result);
+}
+
+:i64.xor is op=0x85 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 ^ _value2;
+    push2(_result);
+}
+
+:i64.shl is op=0x86 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop(_value2);
+    pop2(_value1);
+    _result = _value1 << (_value2 & 0x3f);
+    push2(_result);
+}
+
+:i64.shr_s is op=0x87 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop(_value2);
+    pop2(_value1);
+    _result = _value1 s>> (_value2 & 0x3f);
+    push2(_result);
+}
+
+:i64.shr_u is op=0x88 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop(_value2);
+    pop2(_value1);
+    _result = _value1 >> (_value2 & 0x3f);
+    push2(_result);
+}
+
+:i64.rotl is op=0x89 {
+}
+
+:i64.rotr is op=0x8a {
+}
+
+###################################
+
+:f32.abs is op=0x8b {
+}
+
+:f32.neg is op=0x8c {
+}
+
+:f32.ceil is op=0x8d {
+}
+
+:f32.floor is op=0x8e {
+}
+
+:f32.trunc is op=0x8f {
+}
+
+:f32.nearest is op=0x90 {
+}
+
+:f32.sqrt is op=0x91 {
+}
+
+:f32.add is op=0x92 {
+}
+
+:f32.sub is op=0x93 {
+}
+
+:f32.mul is op=0x94 {
+}
+
+:f32.div is op=0x95 {
+}
+
+:f32.min is op=0x96 {
+}
+
+:f32.max is op=0x97 {
+}
+
+:f32.copysign is op=0x98 {
+}
+
+###################################
+
+:f64.abs is op=0x99 {
+}
+
+:f64.neg is op=0x9a {
+}
+
+:f64.ceil is op=0x9b {
+}
+
+:f64.floor is op=0x9c {
+}
+
+:f64.trunc is op=0x9d {
+}
+
+:f64.nearest is op=0x9e {
+}
+
+:f64.sqrt is op=0x9f {
+}
+
+:f64.add is op=0xa0 {
+}
+
+:f64.sub is op=0xa1 {
+}
+
+:f64.mul is op=0xa2 {
+}
+
+:f64.div is op=0xa3 {
+}
+
+:f64.min is op=0xa4 {
+}
+
+:f64.max is op=0xa5 {
+}
+
+:f64.copysign is op=0xa6 {
+}
+
+###############################################################################
+# Conversions
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#conversions-described-here
+###############################################################################
+
+
+:i32.wrap_i64 is op=0xa7 {
+}
+
+:i32.trunc_s_f32 is op=0xa8 {
+}
+
+:i32.trunc_u_f32 is op=0xa9 {
+}
+
+:i32.trunc_s_f64 is op=0xaa {
+}
+
+:i32.trunc_u_f64 is op=0xab {
+}
+
+###################################
+
+:i64.extend_s_i32 is op=0xac {
+}
+
+:i64.extend_u_i32 is op=0xad {
+}
+
+:i64.trunc_s_f32 is op=0xae {
+}
+
+:i64.trunc_u_f32 is op=0xaf {
+}
+
+:i64.trunc_s_f64 is op=0xb0 {
+}
+
+:i64.trunc_u_f64 is op=0xb1 {
+}
+
+###################################
+
+:f32.convert_s_i32 is op=0xb2 {
+}
+
+:f32.convert_u_i32 is op=0xb3 {
+}
+
+:f32.convert_s_i64 is op=0xb4 {
+}
+
+:f32.convert_u_i64 is op=0xb5 {
+}
+
+:f32.demote_f64 is op=0xb6 {
+}
+
+###################################
+
+:f64.convert_s_i32 is op=0xb7 {
+}
+
+:f64.convert_u_i32 is op=0xb8 {
+}
+
+:f64.convert_s_i64 is op=0xb9 {
+}
+
+:f64.convert_u_i64 is op=0xba {
+}
+
+:f64.promote_f32 is op=0xbb {
+}
+
+
+###############################################################################
+# Reinterpretations
+# https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#reinterpretations-described-here
+###############################################################################
+
+:i32.reinterpret_f32 is op=0xbc {
+}
+
+:i64.reinterpret_f64 is op=0xbd {
+}
+
+:f32.reinterpret_i32 is op=0xbe {
+}
+
+:f64.reinterpret_i64 is op=0xbf {
 }
 
 
