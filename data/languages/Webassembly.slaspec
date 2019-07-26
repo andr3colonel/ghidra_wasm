@@ -114,14 +114,14 @@ testrmode2: val is (flag40_0=1 & flag40_1=1 & flag40_2=1 & flag40_3=1 & flag40_4
 testrmode2: val is (flag32_0=1 & flag32_1=1 & flag32_2=1 & flag32_3=0) & byte32_0 & byte32_1 & byte32_2 & byte32_3 [ val = byte32_0 | byte32_1 << 7 | byte32_2 << 14| byte32_3 << 21; ] {tmp:4=0; export tmp;}
 testrmode2: val is (flag24_0=1 & flag24_1=1 & flag24_2=0) & byte24_0 & byte24_1 & byte24_2 [ val = byte24_0 | byte24_1 << 7 | byte24_1 << 14; ] {tmp:4=0; export tmp;}
 testrmode2: val is (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = byte16_0 | byte16_1 <<7; ] {tmp:4=0; export tmp;}
-testrmode2: byte8_0 is flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
+testrmode2: byte8_0 is flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 
 
 testrmode: val is op; (flag40_0=1 & flag40_1=1 & flag40_2=1 & flag40_3=1 & flag40_4=0) & byte40_0 & byte40_1 & byte40_2 & byte40_3 & byte40_4 [ val = byte40_0 | byte40_1 << 7 | byte40_2 << 14| byte40_3 << 21| byte40_4 << 28; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag32_0=1 & flag32_1=1 & flag32_2=1 & flag32_3=0) & byte32_0 & byte32_1 & byte32_2 & byte32_3 [ val = byte32_0 | byte32_1 << 7 | byte32_2 << 14| byte32_3 << 21; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag24_0=1 & flag24_1=1 & flag24_2=0) & byte24_0 & byte24_1 & byte24_2 [ val = byte24_0 | byte24_1 << 7 | byte24_1 << 14; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = byte16_0 | byte16_1 <<7; ] {tmp:4=0; export tmp;}
-testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
+testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 
 ###############################################################################
 # Control flow operators
