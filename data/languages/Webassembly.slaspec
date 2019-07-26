@@ -195,18 +195,19 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 ###############################################################################
 
 :get_local testrmode is op=0x20 ... & testrmode {
-    #LVA = testrmode * $(SIZE);
+	SP = 0x1000 - testrmode * $(SIZE); 
+    LVA = testrmode * $(SIZE);
     # TODO How to determine if the data in i32, f64, f32, f64???
-    #_value :$(SIZE) = *[localVariableArray]:$(SIZE) (LVA);
-    #push(_value);  
+    _value :$(SIZE) = *[localVariableArray]:$(SIZE) (LVA);
+    push(_value);  
 }
 
 :set_local testrmode is op=0x21 ... & testrmode { 
     # TODO How to determine if the data in i32, f64, f32, f64???
-    #_value :$(SIZE) = 0;
-    #pop(_value);
-    #LVA = testrmode * $(SIZE);
-    #*[localVariableArray]:$(SIZE) (LVA) =_value;  
+    _value :$(SIZE) = 0;
+    pop(_value);
+    LVA = testrmode * $(SIZE);
+    *[localVariableArray]:$(SIZE) (LVA) =_value;  
 }
 
 :tee_local testrmode is op=0x22 ... & testrmode {
