@@ -17,7 +17,7 @@ define space localVariableArray  type=ram_space      size=$(DWORD);
 define space parameterSpace      type=ram_space      size=$(DWORD);
 
 define register offset = 0x0 size=$(QWORD) [return_value];
-define register offset = 0x8 size=$(DWORD) [SP PC return_address];
+define register offset = 0x8 size=$(DWORD) [SP PC return_address LVA];
 
 ###############################################################################
 # TOKENS
