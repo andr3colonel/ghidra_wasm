@@ -17,7 +17,7 @@ define space localVariableArray  type=ram_space      size=$(DWORD);
 define space parameterSpace      type=ram_space      size=$(DWORD);
 
 define register offset = 0x0 size=$(QWORD) [return_value];
-define register offset = 0x0 size=$(DWORD) [SP PC];
+define register offset = 0x8 size=$(DWORD) [SP PC return_address];
 
 ###############################################################################
 # TOKENS
@@ -148,7 +148,8 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=1; export tmp;}
 :else is op=0x05 {
 }
 
-:end is op=0x0B {   
+:end is op=0x0B {
+	return [return_address];
 }
 
 :br testrmode is op=0x0C ... & testrmode {
