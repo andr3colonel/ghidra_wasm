@@ -17,13 +17,13 @@ package wasm;
 
 import java.io.IOException;
 
+
 import ghidra.app.services.AbstractAnalyzer;
 import ghidra.app.services.AnalyzerType;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
 import ghidra.app.util.bin.MemoryByteProvider;
 import ghidra.app.util.importer.MessageLog;
-import ghidra.file.formats.android.dex.format.DexHeader;
 import ghidra.framework.options.Options;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressSetView;
@@ -47,11 +47,15 @@ import wasm.format.sections.structures.WasmFunctionBody;
  */
 public class WasmAnalyzer extends AbstractAnalyzer {
 
+	private final static String NAME = "WebAssembly";
+	private static final String DESCRIPTION =
+			"WebAssembly analyzer";
+
 	public WasmAnalyzer() {
 
 		// TODO: Name the analyzer and give it a description.
 
-		super("Wasm exports extractor", "Extracts exported methods from wasm file", AnalyzerType.BYTE_ANALYZER);
+		super(NAME, DESCRIPTION, AnalyzerType.BYTE_ANALYZER);
 	}
 
 	@Override
@@ -101,6 +105,8 @@ public class WasmAnalyzer extends AbstractAnalyzer {
 		try {
 			WasmModule header = new WasmModule(reader);
 			for (WasmSection section: header.getSections()) {
+
+				// Add function into symbol tree
 				if (section.getId() == WasmSectionId.SEC_CODE) {
 					WasmCodeSection codeSection = (WasmCodeSection)section.getPayload();
 					long code_offset = section.getPayloadOffset();
@@ -109,6 +115,14 @@ public class WasmAnalyzer extends AbstractAnalyzer {
 						Address methodAddress = Utils.toAddr( program, Utils.METHOD_ADDRESS + method_offset );
 						createMethodSymbol(program, methodAddress, "R", null, log);
 					}
+				}
+				else if (section.getId() == WasmSectionId.SEC_EXPORT) {
+					// TODO create export symbol
+					System.out.println( "WasmSectionId.SEC_EXPORT");
+				}
+				else if (section.getId() == WasmSectionId.SEC_IMPORT) {
+					// TODO create import symbol
+					System.out.println( "WasmSectionId.SEC_IMPORT");
 				}
 			}
 		} catch (IOException e) {

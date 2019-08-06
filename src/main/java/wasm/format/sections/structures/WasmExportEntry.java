@@ -49,7 +49,8 @@ public class WasmExportEntry implements StructConverter {
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-		Structure structure = new StructureDataType("export_" + index, 0);
+		// TODO fix conflict struct_name when memory and function0 are exported (both index = 0)
+		Structure structure = new StructureDataType("export_" + index.getValue(), 0);
 		structure.add(field_len.toDataType(), field_len.toDataType().getLength(), "field_len", null);
 		structure.add(STRING, name.length(), "name", null);
 		structure.add(BYTE, 1, "kind", null);

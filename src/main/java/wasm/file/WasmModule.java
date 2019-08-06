@@ -11,6 +11,7 @@ import ghidra.util.exception.DuplicateNameException;
 import wasm.format.WasmConstants;
 import wasm.format.WasmHeader;
 import wasm.format.sections.WasmSection;
+import wasm.format.sections.WasmSection.WasmSectionId;
 
 public class WasmModule  {
 	

@@ -28,6 +28,10 @@ public class WasmCodeSection implements WasmPayload {
 	public List<WasmFunctionBody> getFunctions() {
 		return functions;
 	}
+	
+	public int getCount() {
+		return count.getValue();
+	}
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {

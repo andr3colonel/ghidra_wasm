@@ -51,7 +51,7 @@ public class WasmImportEntry implements StructConverter {
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-		Structure structure = new StructureDataType("import_" + "_" + module_str + "_" + field_str, 0);
+		Structure structure = new StructureDataType("import_" + module_str + "_" + field_str, 0);
 		structure.add(module_len.toDataType(), module_len.toDataType().getLength(), "module_len", null);
 		structure.add(STRING, module_str.length(), "module_name", null);
 		structure.add(field_len.toDataType(), field_len.toDataType().getLength(), "field_len", null);

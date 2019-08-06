@@ -97,7 +97,7 @@ public class WasmSection implements StructConverter {
 	public WasmPayload getPayload() {
 		return payload;
 	}
-		
+
 	public long getPayloadOffset() {
 		return payload_offset;
 	}

@@ -14,6 +14,7 @@ define space ram                 type=ram_space      size=$(DWORD) default;
 define space register            type=register_space size=$(DWORD);
 define space constantPool        type=ram_space      size=$(DWORD);
 define space localVariableArray  type=ram_space      size=$(DWORD);
+define space glocalVariableArray  type=ram_space      size=$(DWORD);
 define space parameterSpace      type=ram_space      size=$(DWORD);
 
 define register offset = 0x0 size=$(QWORD) [return_value];
@@ -76,7 +77,23 @@ define token leb128_40(48)
     flag40_4 = (48, 48)
 ;
 
-define pcodeop trap;
+define token CONST16 ( 16 )  # one 16 constant
+    constant16      = ( 0,15 )
+    constant16s     = ( 0,15 ) signed
+;
+
+define token CONST32 ( 32 )  # one 32 constant
+    constant32      = ( 0,31 )
+    constant32s     = ( 0,31 ) signed
+;
+
+define token CONST64 ( 64 )  # one 64 constant
+    constant64      = ( 0,63 )
+;
+
+define pcodeop unreachable;
+define pcodeop current_memory;
+define pcodeop grow_memory;
 
 ###############################################################################
 # Macros
@@ -116,20 +133,38 @@ testrmode2: val is (flag24_0=1 & flag24_1=1 & flag24_2=0) & byte24_0 & byte24_1 
 testrmode2: val is (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = byte16_0 | byte16_1 <<7; ] {tmp:4=0; export tmp;}
 testrmode2: byte8_0 is flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 
-
 testrmode: val is op; (flag40_0=1 & flag40_1=1 & flag40_2=1 & flag40_3=1 & flag40_4=0) & byte40_0 & byte40_1 & byte40_2 & byte40_3 & byte40_4 [ val = byte40_0 | byte40_1 << 7 | byte40_2 << 14| byte40_3 << 21| byte40_4 << 28; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag32_0=1 & flag32_1=1 & flag32_2=1 & flag32_3=0) & byte32_0 & byte32_1 & byte32_2 & byte32_3 [ val = byte32_0 | byte32_1 << 7 | byte32_2 << 14| byte32_3 << 21; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag24_0=1 & flag24_1=1 & flag24_2=0) & byte24_0 & byte24_1 & byte24_2 [ val = byte24_0 | byte24_1 << 7 | byte24_1 << 14; ] {tmp:4=0; export tmp;}
 testrmode: val is op; (flag16_0=1 & flag16_1=0) & byte16_0 & byte16_1 [ val = byte16_0 | byte16_1 <<7; ] {tmp:4=0; export tmp;}
 testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 
+
+###############################################################################
+# -- DEV NOTES --
+# WASM type matching with JVM type
+# JVM opcodes = https://en.wikibooks.org/wiki/Java_Programming/Byte_Code
+# i32 = int
+# i64 = long
+# f32 = float
+# f64 = double
+# TODO - to be removed once done
+###############################################################################
+
+
 ###############################################################################
 # Control flow operators
 # https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#control-flow-operators-described-here
 ###############################################################################
 
+# TODO - just a test
+# to be removed - used to detect end of the function
+:"" is op=0xFF{
+    return [return_address];
+}
+
 :unreachable is op=0x00{
-	trap();
+	unreachable();
 }
 
 :nop is op=0x01{
@@ -149,7 +184,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 }
 
 :end is op=0x0B {
-	return [return_address];
+	#return [return_address];
 }
 
 :br testrmode is op=0x0C ... & testrmode {
@@ -186,7 +221,18 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
     pop(_value);
 }
 
-:select testrmode, testrmode2 is op=0x1B ... & testrmode; testrmode2 {
+:select is op=0x1B {
+    # TODO How to determine testrmode & return type (i32, f64, f32, f64)???
+    _cond :$(SIZE) = 0;
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    pop(_cond);
+    pop(_value2);
+    pop(_value1);
+
+    #if (_cond != 0 ) push(_value1);
+    #if (_value1 == 0 ) push(_value2);
+    # NOT WORKING
 }
 
 ###############################################################################
@@ -211,17 +257,28 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 }
 
 :tee_local testrmode is op=0x22 ... & testrmode {
-    #_value :$(SIZE) = 0;
-    #pop(_value);
-    #LVA = testrmode * $(SIZE);
-    #*[localVariableArray]:$(SIZE) (LVA) =_value;
-    #push(_value);   
+    # TODO How to determine if the data in i32, f64, f32, f64???
+    _value :$(SIZE) = 0;
+    pop(_value);
+    LVA = testrmode * $(SIZE);
+    *[localVariableArray]:$(SIZE) (LVA) =_value;
+    push(_value);
 }
 
-:get_global testrmode is op=0x23 ... & testrmode {   
+:get_global testrmode is op=0x23 ... & testrmode {
+    #SP = 0x1000 - testrmode * $(SIZE); 
+    LVA = testrmode * $(SIZE);
+    # TODO How to determine if the data in i32, f64, f32, f64???
+    _value :$(SIZE) = *[glocalVariableArray]:$(SIZE) (LVA);
+    push(_value);
 }
 
-:set_global testrmode is op=0x24 ... & testrmode {   
+:set_global testrmode is op=0x24 ... & testrmode {
+    # TODO How to determine if the data in i32, f64, f32, f64???
+    _value :$(SIZE) = 0;
+    pop(_value);
+    LVA = testrmode * $(SIZE);
+    *[glocalVariableArray]:$(SIZE) (LVA) =_value;
 }
 
 
@@ -300,10 +357,17 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.store32 testrmode, testrmode2 is op=0x3e  ... & testrmode; testrmode2 {
 }
 
-:current_memory testrmode is op=0x3f  ... & testrmode {
+:current_memory is op=0x3f {
+    _value:$(SIZE) = current_memory();
+    push(_value);
 }
 
 :grow_memory testrmode is op=0x40  ... & testrmode {
+    _size :$(SIZE) = 0;
+    _return :$(SIZE) = 0;
+    pop(_size);
+    _return = grow_memory(_size);
+    push(_return);
 }
 
 ###############################################################################
@@ -311,16 +375,30 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 # https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#constants-described-here
 ###############################################################################
 
-:i32.const testrmode is op=0x41  ... & testrmode {
+# TODO - verify if it's accurate
+:i32.const constant32 is op=0x41 ; constant32 {
+    _value:$(SIZE) = constant32;
+    push(_value);
 }
 
-:i64.const testrmode is op=0x42  ... & testrmode {
+# TODO - verify if it's accurate
+:i64.const constant64 is op=0x42 ; constant64 {
+    _l :$(DOUBLE_SIZE) = constant64;
+    push2(_l);
 }
 
-:f32.const testrmode is op=0x43  ... & testrmode {
+# TODO - verify if it's accurate
+:f32.const constant32 is op=0x43 ; constant32 {
+    _int :$(SIZE) = constant32;
+    _result :$(SIZE) = int2float(_int);
+    push(_result);
 }
 
-:f64.const testrmode is op=0x44  ... & testrmode {
+# TODO - verify if it's accurate
+:f64.const constant64 is op=0x44 ; constant64 {
+    _long :$(DOUBLE_SIZE) = constant64;
+    _double :$(DOUBLE_SIZE) = int2float(_long);
+    push2(_double); 
 }
 
 ###############################################################################
@@ -419,7 +497,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 
 :i64.eqz is op=0x50 {
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value1);
     _result = sext(_value1 == 0);
@@ -429,7 +507,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.eq is op=0x51 {
     _value2 :$(DOUBLE_SIZE) = 0;
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value2);
     pop(_value1);
@@ -440,7 +518,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.ne is op=0x52 {
     _value2 :$(DOUBLE_SIZE) = 0;
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value2);
     pop(_value1);
@@ -451,7 +529,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.lt_s is op=0x53 {
     _value2 :$(DOUBLE_SIZE) = 0;
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value2);
     pop(_value1);
@@ -465,7 +543,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.gt_s is op=0x55 {
     _value2 :$(DOUBLE_SIZE) = 0;
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value2);
     pop(_value1);
@@ -479,7 +557,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.le_s is op=0x57 {
     _value2 :$(DOUBLE_SIZE) = 0;
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value2);
     pop(_value1);
@@ -493,7 +571,7 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 :i64.ge_s is op=0x59 {
     _value2 :$(DOUBLE_SIZE) = 0;
     _value1 :$(DOUBLE_SIZE) = 0;
-    _result :$(DOUBLE_SIZE) = 0;
+    _result :$(SIZE) = 0;
     
     pop(_value2);
     pop(_value1);
@@ -804,6 +882,11 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 }
 
 :f32.neg is op=0x8c {
+    _value :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value);
+    _result = f- _value;
+    push(_result);
 }
 
 :f32.ceil is op=0x8d {
@@ -822,15 +905,43 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 }
 
 :f32.add is op=0x92 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 f+ _value2;
+    push(_result);
 }
 
 :f32.sub is op=0x93 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 f- _value2;
+    push(_result);
 }
 
 :f32.mul is op=0x94 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 f* _value2;
+    push(_result);
 }
 
 :f32.div is op=0x95 {
+    _value2 :$(SIZE) = 0;
+    _value1 :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value2);
+    pop(_value1);
+    _result = _value1 f/ _value2;
+    push(_result);
 }
 
 :f32.min is op=0x96 {
@@ -848,6 +959,11 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 }
 
 :f64.neg is op=0x9a {
+    _value :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value);
+    _result = f- _value;
+    push2(_result);
 }
 
 :f64.ceil is op=0x9b {
@@ -866,15 +982,43 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 }
 
 :f64.add is op=0xa0 {
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 f+ _value2;
+    push2(_result);
 }
 
 :f64.sub is op=0xa1 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 f- _value2;
+    push2(_result);
 }
 
 :f64.mul is op=0xa2 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 f* _value2;
+    push2(_result);
 }
 
 :f64.div is op=0xa3 {
+    _value2 :$(DOUBLE_SIZE) = 0;
+    _value1 :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value2);
+    pop2(_value1);
+    _result = _value1 f/ _value2;
+    push2(_result);
 }
 
 :f64.min is op=0xa4 {
@@ -929,36 +1073,104 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 
 ###################################
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f32.convert_s_i32 is op=0xb2 {
+    _value :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value);
+    _result = round(_value);
+    push(_result);
 }
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f32.convert_u_i32 is op=0xb3 {
+    _value :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value);
+    _result = round(_value);
+    push(_result);
 }
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f32.convert_s_i64 is op=0xb4 {
+    _value :$(SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop(_value);
+    _result = float2float(_value);
+    push2(_result);
 }
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f32.convert_u_i64 is op=0xb5 {
+    _value :$(SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop(_value);
+    _result = float2float(_value);
+    push2(_result);
 }
 
+# TODO check if convertion is correct
 :f32.demote_f64 is op=0xb6 {
+    _double :$(DOUBLE_SIZE) = 0;
+    _float :$(SIZE) = 0;
+    pop2(_double);
+    _float = float2float(_double);
+    push(_float);
 }
 
 ###################################
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f64.convert_s_i32 is op=0xb7 {
+    _double :$(DOUBLE_SIZE) = 0;
+    _int :$(DOUBLE_SIZE) = 0;
+    pop2(_double);
+    _int = round(_double);
+    push(_int:$(SIZE));
 }
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f64.convert_u_i32 is op=0xb8 {
+    _double :$(DOUBLE_SIZE) = 0;
+    _int :$(DOUBLE_SIZE) = 0;
+    pop2(_double);
+    _int = round(_double);
+    push(_int:$(SIZE));
 }
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f64.convert_s_i64 is op=0xb9 {
+    _double :$(DOUBLE_SIZE) = 0;
+    _long :$(DOUBLE_SIZE) = 0;
+    pop2(_double);
+    _long = round(_double);
+    push2(_long);
 }
 
+# TODO check if convertion is correct
+# maybe issue with signed/unigned 
 :f64.convert_u_i64 is op=0xba {
+    _double :$(DOUBLE_SIZE) = 0;
+    _long :$(DOUBLE_SIZE) = 0;
+    pop2(_double);
+    _long = round(_double);
+    push2(_long);
 }
 
+# TODO check if convertion is correct
 :f64.promote_f32 is op=0xbb {
+    _value :$(SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop(_value);
+    _result = float2float(_value);
+    push2(_result);
 }
 
 
@@ -967,21 +1179,40 @@ testrmode: byte8_0 is op; flag8_0=0 & byte8_0    {tmp:4=byte8_0; export tmp;}
 # https://github.com/WebAssembly/design/blob/master/BinaryEncoding.md#reinterpretations-described-here
 ###############################################################################
 
+# TODO check if convertion is correct
 :i32.reinterpret_f32 is op=0xbc {
+    _value :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value);
+    _result = int2float(_value);
+    push(_result); 
 }
 
+# TODO check if convertion is correct
 :i64.reinterpret_f64 is op=0xbd {
+    _value :$(DOUBLE_SIZE) = 0;
+    _result :$(DOUBLE_SIZE) = 0;
+    pop2(_value);
+    _result = int2float(_value);
+    push2(_result);
 }
 
+# TODO check if convertion is correct
 :f32.reinterpret_i32 is op=0xbe {
+    _value :$(SIZE) = 0;
+    _result :$(SIZE) = 0;
+    pop(_value);
+    _result = round(_value);
+    push(_result);
 }
 
+# TODO check if convertion is correct
 :f64.reinterpret_i64 is op=0xbf {
+    _double :$(DOUBLE_SIZE) = 0;
+    _long :$(DOUBLE_SIZE) = 0;
+    pop2(_double);
+    _long = round(_double);
+    push2(_long);
 }
 
-
-#:i32.const addrmode is jop=0x41 ... & addrmode {
-    #_value:$(DWORD) = addrmode;
-    #push(_value);
-#}
 

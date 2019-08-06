@@ -33,7 +33,8 @@ public class WasmFuncType implements StructConverter {
 
 	@Override
 	public DataType toDataType() throws DuplicateNameException, IOException {
-		Structure structure = new StructureDataType("funct_type", 0);
+		// TODO Need to be improve, can conflict if same number args/return but different data type  
+		Structure structure = new StructureDataType("func_type_" + param_count.getValue() + "_" + return_count.getValue(), 0);
 		structure.add(BYTE, 1, "form", null);
 		structure.add(param_count.toDataType(), param_count.toDataType().getLength(), "param_count", null);
 		if (param_count.getValue() > 0) {
