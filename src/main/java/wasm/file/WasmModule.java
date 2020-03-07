@@ -25,7 +25,7 @@ public class WasmModule  {
 	}
 
 	/*TODO: put sections to map*/
-	public WasmSection getSection(WasmSectionId id) {
+	public WasmSection getSection(WasmSection.WasmSectionId id) {
 		for (WasmSection section: sections) {
 			if (section.getId() == id) {
 				return section;
