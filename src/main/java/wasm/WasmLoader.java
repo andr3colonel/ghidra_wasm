@@ -19,11 +19,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import ghidra.app.util.MemoryBlockUtil;
+import ghidra.app.util.MemoryBlockUtils;
 import ghidra.app.util.Option;
 import ghidra.app.util.bin.BinaryReader;
 import ghidra.app.util.bin.ByteProvider;
-import ghidra.app.util.importer.MemoryConflictHandler;
 import ghidra.app.util.importer.MessageLog;
 import ghidra.app.util.opinion.AbstractLibrarySupportLoader;
 import ghidra.app.util.opinion.LoadSpec;
@@ -105,9 +104,6 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		block.setWrite( false );
 		block.setExecute( false );
 	}
-
-	private MemoryBlockUtil mbu; 
-	
 	
 	public Data createData(Program program, Listing listing, Address address, DataType dt) {
 		try {
@@ -127,14 +123,14 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		return null;
 	}
 	
-	private void markupHeader(Program program, WasmHeader header, TaskMonitor monitor, InputStream reader) throws DuplicateNameException, IOException {
+	private void markupHeader(Program program, WasmHeader header, TaskMonitor monitor, InputStream reader, MessageLog log) throws DuplicateNameException, IOException {
 		boolean r = true;
 		boolean w = true;
 		boolean x = true;
 		String BLOCK_SOURCE_NAME = "Wasm Header";
 		Address start = program.getAddressFactory().getDefaultAddressSpace().getAddress( 0x0 );
 		try {
-			mbu.createInitializedBlock(".header", start, reader, 8, "", BLOCK_SOURCE_NAME, r, w, x, monitor);
+			MemoryBlockUtils.createInitializedBlock(program, false, ".header", start, reader, 8, "", BLOCK_SOURCE_NAME, r, w, x, log, monitor);
 			createData(program, program.getListing(), start, header.toDataType());
 		} catch (AddressOverflowException e) {
 			// TODO Auto-generated catch block
@@ -142,14 +138,14 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 		}
 	}
 
-	private void markupSections(Program program, WasmModule module, TaskMonitor monitor, InputStream reader) throws DuplicateNameException, IOException, AddressOverflowException {
+	private void markupSections(Program program, WasmModule module, TaskMonitor monitor, InputStream reader, MessageLog log) throws DuplicateNameException, IOException, AddressOverflowException {
 		boolean r = true;
 		boolean w = true;
 		boolean x = true;
 		String BLOCK_SOURCE_NAME = "Wasm Section";
 		for (WasmSection section: module.getSections()) {
 			Address start = program.getAddressFactory().getDefaultAddressSpace().getAddress(section.getSectionOffset());
-			mbu.createInitializedBlock(section.getPayload().getName(), start, reader, section.getSectionSize(), "", BLOCK_SOURCE_NAME, r, w, x, monitor);
+			MemoryBlockUtils.createInitializedBlock(program, false, section.getPayload().getName(), start, reader, section.getSectionSize(), "", BLOCK_SOURCE_NAME, r, w, x, log, monitor);
 			createData(program, program.getListing(), start, section.toDataType());			
 		}
 	}
@@ -164,7 +160,7 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 	
 	@Override
 	protected void load(ByteProvider provider, LoadSpec loadSpec, List<Option> options,
-		Program program, MemoryConflictHandler handler, TaskMonitor monitor, MessageLog log)
+		Program program, TaskMonitor monitor, MessageLog log)
 		throws CancelledException, IOException {
 	
 		monitor.setMessage( "Wasm Loader: Start loading" );
@@ -175,16 +171,14 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 	
 			InputStream inputStream;
 			inputStream = provider.getInputStream(0);
-			mbu = new MemoryBlockUtil(program, handler);
-
 			
 			BinaryReader reader = new BinaryReader( provider, true );
 			WasmModule module = new WasmModule( reader );
 	
 			createMethodLookupMemoryBlock( program, monitor );
 			createMethodByteCodeBlock( program, length, monitor);
-			markupHeader(program, module.getHeader(), monitor, inputStream);
-			markupSections(program, module, monitor, inputStream);
+			markupHeader(program, module.getHeader(), monitor, inputStream, log);
+			markupSections(program, module, monitor, inputStream, log);
 			monitor.setMessage( "Wasm Loader: Create byte code" );
 			
 			for (WasmSection section : module.getSections()) {
@@ -227,7 +221,7 @@ public class WasmLoader extends AbstractLibrarySupportLoader {
 	}
 
 	@Override
-	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options) {
-		return super.validateOptions(provider, loadSpec, options);
+	public String validateOptions(ByteProvider provider, LoadSpec loadSpec, List<Option> options, Program program) {
+		return super.validateOptions(provider, loadSpec, options, program);
 	}
 }
